@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Login - Adchain Miner</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="login-container">
+    <h2>Admin Login</h2>
+
+    <!-- Login Form -->
+    <input type="text" id="admin-login-username" placeholder="Username" autocomplete="username" />
+    <input type="password" id="admin-login-password" placeholder="Password" autocomplete="current-password" />
+    <button onclick="loginAdmin()">Login</button>
+
+    <button id="forgot-password-btn" type="button">Forgot Password?</button>
+
+    <p id="login-message"></p>
+
+    <!-- Forgot Password Forms (hidden initially) -->
+    <div id="forgot-password-section" style="display:none; margin-top: 2rem; text-align:left;">
+      
+      <!-- Step 1: Enter Username -->
+      <div id="fp-username-form">
+        <h3>Forgot Password - Step 1</h3>
+        <input type="text" id="fp-username" placeholder="Enter username" />
+        <button onclick="sendResetOtp()">Send OTP</button>
+        <p id="fp-message"></p>
+      </div>
+
+      <!-- Step 2: Enter OTP -->
+      <div id="otp-form" style="display:none;">
+        <h3>Forgot Password - Step 2</h3>
+        <input type="text" id="fp-otp" placeholder="Enter OTP" />
+        <button onclick="verifyResetOtp()">Verify OTP</button>
+        <p id="otp-message"></p>
+      </div>
+
+      <!-- Step 3: Enter New Password -->
+      <div id="new-password-form" style="display:none;">
+        <h3>Forgot Password - Step 3</h3>
+        <input type="password" id="fp-new-password" placeholder="Enter new password" />
+        <button onclick="updatePassword()">Update Password</button>
+        <p id="newpass-message"></p>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="login.js"></script>
+  <script src="forgot-password.js"></script>
+  <script>
+    // Toggle forgot password section visibility
+    document.getElementById("forgot-password-btn").addEventListener("click", () => {
+      const section = document.getElementById("forgot-password-section");
+      if (section.style.display === "none") {
+        section.style.display = "block";
+      } else {
+        section.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>
