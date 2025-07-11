@@ -55,7 +55,46 @@
     <!-- Dashboard Section (hidden initially) -->
     <div id="dashboard-section" style="display:none; margin-top: 2rem; text-align:center;">
       <h2>Welcome to Admin Dashboard</h2>
-      <p>You are logged in!</p>
+      <button onclick="showUsers()">👥 View All Users</button>
+
+      <div id="users-section" style="display: none; margin-top: 20px;">
+  <h2>Registered Users</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>BTC Balance</th>
+        <th>Total Earned</th>
+        <th>Hashrate</th>
+        <th>Last Mined</th>
+      </tr>
+    </thead>
+    <tbody id="users-table">
+      <!-- Fetched user rows will go here -->
+    </tbody>
+  </table>
+      </div>
+
+      <button onclick="showWithdrawals()">💸 View Withdrawals</button>
+
+<div id="withdrawals-section" style="display: none; margin-top: 20px;">
+  <h2>User Withdrawals</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Amount</th>
+        <th>Wallet</th>
+        <th>Status</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody id="withdrawals-table">
+      <!-- Withdrawals will be loaded here -->
+    </tbody>
+  </table>
+</div>
+      
       <button id="dashboard-logout-btn">Logout</button>
     </div>
   </div>
