@@ -209,3 +209,28 @@ function fetchUsers() {
       alert("❌ Failed to load users.");
     });
 }
+
+function showWithdrawals() {
+  const section = document.getElementById("withdrawals-section");
+  section.style.display = section.style.display === "none" ? "block" : "none";
+
+  fetch("https://danoski-backend.onrender.com/admin/withdrawals")
+    .then(res => res.json())
+    .then(data => {
+      const table = document.getElementById("withdrawals-table");
+      table.innerHTML = "";
+
+      data.forEach(item => {
+        const row = `
+          <tr>
+            <td>${item.email}</td>
+            <td>${item.amount}</td>
+            <td>${item.wallet}</td>
+            <td>${item.status}</td>
+            <td>${new Date(item.created_at).toLocaleString()}</td>
+          </tr>
+        `;
+        table.innerHTML += row;
+      });
+    });
+}
