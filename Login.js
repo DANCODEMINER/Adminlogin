@@ -28,3 +28,100 @@ function loginAdmin() {
     document.getElementById("login-message").innerText = "❌ Failed to log in.";
   });
 }
+
+// Step 1: Send reset OTP
+function sendResetOtp() {
+  const username = document.getElementById("fp-username").value.trim();
+  if (!username) {
+    document.getElementById("fp-message").innerText = "❌ Please enter your username.";
+    return;
+  }
+
+  fetch("https://danoski-backend.onrender.com/admin/send-reset-otp", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.error) {
+      document.getElementById("fp-message").innerText = "❌ " + data.error;
+    } else {
+      sessionStorage.setItem("fp-username", username);
+      document.getElementById("fp-message").innerText = "✅ OTP sent to admin email.";
+      document.getElementById("forgot-username-form").style.display = "none";
+      document.getElementById("otp-form").style.display = "block";
+    }
+  })
+  .catch(() => {
+    document.getElementById("fp-message").innerText = "❌ Failed to send OTP.";
+  });
+}
+
+// Step 2: Verify OTP
+function verifyResetOtp() {
+  const otp = document.getElementById("fp-otp").value.trim();
+  const username = sessionStorage.getItem("fp-username");
+
+  if (!otp) {
+    document.getElementById("otp-message").innerText = "❌ Please enter the OTP.";
+    return;
+  }
+  if (!username) {
+    document.getElementById("otp-message").innerText = "❌ Username missing, please restart.";
+    return;
+  }
+
+  fetch("https://danoski-backend.onrender.com/admin/verify-reset-otp", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, otp })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.error) {
+      document.getElementById("otp-message").innerText = "❌ " + data.error;
+    } else {
+      document.getElementById("otp-message").innerText = "✅ OTP verified.";
+      document.getElementById("otp-form").style.display = "none";
+      document.getElementById("new-password-form").style.display = "block";
+    }
+  })
+  .catch(() => {
+    document.getElementById("otp-message").innerText = "❌ Failed to verify OTP.";
+  });
+}
+
+// Step 3: Update password
+function updatePassword() {
+  const newPassword = document.getElementById("fp-new-password").value.trim();
+  const username = sessionStorage.getItem("fp-username");
+
+  if (!newPassword) {
+    document.getElementById("newpass-message").innerText = "❌ Please enter the new password.";
+    return;
+  }
+  if (!username) {
+    document.getElementById("newpass-message").innerText = "❌ Username missing, please restart.";
+    return;
+  }
+
+  fetch("https://danoski-backend.onrender.com/admin/update-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, new_password: newPassword })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.error) {
+      document.getElementById("newpass-message").innerText = "❌ " + data.error;
+    } else {
+      document.getElementById("newpass-message").innerText = "✅ Password updated successfully.";
+      sessionStorage.removeItem("fp-username");
+      // Optionally, hide form or redirect here
+    }
+  })
+  .catch(() => {
+    document.getElementById("newpass-message").innerText = "❌ Failed to update password.";
+  });
+}
