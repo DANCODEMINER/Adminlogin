@@ -179,3 +179,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
   logoutBtn.addEventListener("click", logoutAdmin);
 });
+
+function showUsers() {
+  document.getElementById("users-section").style.display = "block";
+  fetchUsers();
+}
+
+function fetchUsers() {
+  fetch("https://danoski-backend.onrender.com/admin/users")
+    .then(res => res.json())
+    .then(data => {
+      const table = document.getElementById("users-table");
+      table.innerHTML = ""; // Clear previous data
+
+      data.forEach(user => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${user.email}</td>
+          <td>${user.btc_balance.toFixed(8)}</td>
+          <td>${user.total_earned.toFixed(8)}</td>
+          <td>${user.hashrate}</td>
+          <td>${user.last_mined ? new Date(user.last_mined).toLocaleString() : "N/A"}</td>
+        `;
+        table.appendChild(row);
+      });
+    })
+    .catch(err => {
+      console.error("Error loading users:", err);
+      alert("❌ Failed to load users.");
+    });
+}
