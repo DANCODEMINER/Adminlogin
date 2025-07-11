@@ -262,3 +262,87 @@ function postMessage() {
       document.getElementById("msg-content").value = "";
     });
 }
+
+let autoApprove = false;
+
+function showWithdrawals() {
+  const section = document.getElementById("withdrawals-section");
+  section.style.display = section.style.display === "none" ? "block" : "none";
+
+  fetch("https://danoski-backend.onrender.com/admin/withdrawals")
+    .then(res => res.json())
+    .then(data => {
+      const table = document.getElementById("withdrawals-table");
+      table.innerHTML = "";
+
+      data.forEach(w => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+          <td><input type="checkbox" class="withdraw-checkbox" value="${w.id}" ${w.status !== "pending" ? "disabled" : ""}></td>
+          <td>${w.email}</td>
+          <td>${w.amount}</td>
+          <td>${w.wallet}</td>
+          <td>${w.status}</td>
+          <td>${new Date(w.created_at).toLocaleString()}</td>
+          <td>
+            ${w.status === "pending" ? `
+              <button onclick="updateWithdrawal(${w.id}, 'approved')">✅</button>
+              <button onclick="updateWithdrawal(${w.id}, 'rejected')">❌</button>
+            ` : ""}
+          </td>
+        `;
+
+        table.appendChild(row);
+
+        // Auto-approve if toggle is on
+        if (w.status === "pending" && autoApprove) {
+          updateWithdrawal(w.id, 'approved');
+        }
+      });
+    });
+}
+
+function toggleSelectAll(source) {
+  const checkboxes = document.querySelectorAll(".withdraw-checkbox");
+  checkboxes.forEach(cb => {
+    if (!cb.disabled) cb.checked = source.checked;
+  });
+}
+
+function approveSelectedWithdrawals() {
+  const selected = Array.from(document.querySelectorAll(".withdraw-checkbox:checked"))
+    .map(cb => parseInt(cb.value));
+
+  if (selected.length === 0) return alert("No withdrawals selected.");
+
+  selected.forEach(id => updateWithdrawal(id, "approved"));
+}
+
+function approveAllWithdrawals() {
+  fetch("https://danoski-backend.onrender.com/admin/withdrawals")
+    .then(res => res.json())
+    .then(data => {
+      data.filter(w => w.status === "pending").forEach(w => {
+        updateWithdrawal(w.id, "approved");
+      });
+    });
+}
+
+function updateWithdrawal(id, status) {
+  fetch("https://danoski-backend.onrender.com/admin/update-withdrawal", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id, status })
+  })
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+      showWithdrawals(); // Refresh
+    });
+}
+
+function toggleAutoApprove() {
+  autoApprove = document.getElementById("auto-approve-toggle").checked;
+  showWithdrawals();
+}
