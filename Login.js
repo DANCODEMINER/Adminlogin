@@ -1,3 +1,4 @@
+// Login Admin
 function loginAdmin() {
   const username = document.getElementById("admin-login-username").value.trim();
   const password = document.getElementById("admin-login-password").value.trim();
@@ -12,21 +13,19 @@ function loginAdmin() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password })
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.error) {
-      document.getElementById("login-message").innerText = "❌ " + data.error;
-    } else {
-      document.getElementById("login-message").innerText = "✅ Login successful!";
-      // You can redirect or store session info here if needed
-      // Example:
-      // sessionStorage.setItem("admin", username);
-      // window.location.href = "/admin/dashboard.html";
-    }
-  })
-  .catch(err => {
-    document.getElementById("login-message").innerText = "❌ Failed to log in.";
-  });
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        document.getElementById("login-message").innerText = "❌ " + data.error;
+      } else {
+        document.getElementById("login-message").innerText = "✅ Login successful!";
+        showDashboard(); // ✅ show dashboard on success
+        sessionStorage.setItem("admin", username); // optional
+      }
+    })
+    .catch(() => {
+      document.getElementById("login-message").innerText = "❌ Failed to log in.";
+    });
 }
 
 // Step 1: Send reset OTP
@@ -42,20 +41,20 @@ function sendResetOtp() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username })
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.error) {
-      document.getElementById("fp-message").innerText = "❌ " + data.error;
-    } else {
-      sessionStorage.setItem("fp-username", username);
-      document.getElementById("fp-message").innerText = "✅ OTP sent to admin email.";
-      document.getElementById("forgot-username-form").style.display = "none";
-      document.getElementById("otp-form").style.display = "block";
-    }
-  })
-  .catch(() => {
-    document.getElementById("fp-message").innerText = "❌ Failed to send OTP.";
-  });
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        document.getElementById("fp-message").innerText = "❌ " + data.error;
+      } else {
+        sessionStorage.setItem("fp-username", username);
+        document.getElementById("fp-message").innerText = "✅ OTP sent to admin email.";
+        document.getElementById("fp-username-form").style.display = "none"; // ✅ fixed ID
+        document.getElementById("otp-form").style.display = "block";
+      }
+    })
+    .catch(() => {
+      document.getElementById("fp-message").innerText = "❌ Failed to send OTP.";
+    });
 }
 
 // Step 2: Verify OTP
@@ -77,19 +76,19 @@ function verifyResetOtp() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, otp })
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.error) {
-      document.getElementById("otp-message").innerText = "❌ " + data.error;
-    } else {
-      document.getElementById("otp-message").innerText = "✅ OTP verified.";
-      document.getElementById("otp-form").style.display = "none";
-      document.getElementById("new-password-form").style.display = "block";
-    }
-  })
-  .catch(() => {
-    document.getElementById("otp-message").innerText = "❌ Failed to verify OTP.";
-  });
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        document.getElementById("otp-message").innerText = "❌ " + data.error;
+      } else {
+        document.getElementById("otp-message").innerText = "✅ OTP verified.";
+        document.getElementById("otp-form").style.display = "none";
+        document.getElementById("new-password-form").style.display = "block";
+      }
+    })
+    .catch(() => {
+      document.getElementById("otp-message").innerText = "❌ Failed to verify OTP.";
+    });
 }
 
 // Step 3: Update password
@@ -111,54 +110,48 @@ function updatePassword() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, new_password: newPassword })
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.error) {
-      document.getElementById("newpass-message").innerText = "❌ " + data.error;
-    } else {
-      document.getElementById("newpass-message").innerText = "✅ Password updated successfully.";
-      sessionStorage.removeItem("fp-username");
-      // Optionally, hide form or redirect here
-    }
-  })
-  .catch(() => {
-    document.getElementById("newpass-message").innerText = "❌ Failed to update password.";
-  });
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        document.getElementById("newpass-message").innerText = "❌ " + data.error;
+      } else {
+        document.getElementById("newpass-message").innerText = "✅ Password updated successfully.";
+        sessionStorage.removeItem("fp-username");
+      }
+    })
+    .catch(() => {
+      document.getElementById("newpass-message").innerText = "❌ Failed to update password.";
+    });
 }
 
-// Run after DOM loaded
-document.addEventListener("DOMContentLoaded", () => {
-  // Elements
-  const forgotPasswordBtn = document.getElementById("forgot-password-btn");
-  const loginForm = document.getElementById("login-form");
-  const forgotPasswordSection = document.getElementById("forgot-password-section");
-  const dashboardSection = document.getElementById("dashboard-section");
-  const logoutBtn = document.getElementById("dashboard-logout-btn"); // assign an id in HTML (see below)
-
-  // Show forgot password section & hide login form
-  forgotPasswordBtn.addEventListener("click", () => {
-    loginForm.style.display = "none";
-    forgotPasswordSection.style.display = "block";
-  });
-
-  // Logout handler
-  logoutBtn.addEventListener("click", () => {
-    dashboardSection.style.display = "none";
-    loginForm.style.display = "block";
-
-    // Clear sessionStorage etc
-    sessionStorage.clear();
-
-    // Clear login inputs and messages
-    document.getElementById("admin-login-username").value = "";
-    document.getElementById("admin-login-password").value = "";
-    document.getElementById("login-message").innerText = "";
-  });
-});
-
-// Call this function from your login success handler
+// Show dashboard after login
 function showDashboard() {
   document.getElementById("login-form").style.display = "none";
   document.getElementById("forgot-password-section").style.display = "none";
   document.getElementById("dashboard-section").style.display = "block";
 }
+
+// Reset to login view on logout
+function logoutAdmin() {
+  document.getElementById("dashboard-section").style.display = "none";
+  document.getElementById("login-form").style.display = "block";
+
+  sessionStorage.clear();
+
+  document.getElementById("admin-login-username").value = "";
+  document.getElementById("admin-login-password").value = "";
+  document.getElementById("login-message").innerText = "";
+}
+
+// Setup listeners after DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+  const forgotPasswordBtn = document.getElementById("forgot-password-btn");
+  const logoutBtn = document.getElementById("dashboard-logout-btn");
+
+  forgotPasswordBtn.addEventListener("click", () => {
+    document.getElementById("login-form").style.display = "none";
+    document.getElementById("forgot-password-section").style.display = "block";
+  });
+
+  logoutBtn.addEventListener("click", logoutAdmin);
+});
