@@ -94,6 +94,47 @@
     </tbody>
   </table>
 </div>
+
+      <button onclick="toggleMessageForm()">📢 Post Announcement</button>
+
+<div id="message-form-section" style="display: none; margin-top: 20px;">
+  <h2>New Message</h2>
+  <input type="text" id="msg-title" placeholder="Message Title" style="width: 300px;" /><br/><br/>
+  <textarea id="msg-content" placeholder="Message Content" rows="4" style="width: 300px;"></textarea><br/><br/>
+  <button onclick="postMessage()">✅ Send Message</button>
+  <p id="message-status"></p>
+</div>
+
+      <button onclick="showWithdrawals()">💸 View Withdrawals</button>
+
+<div id="withdrawals-section" style="display: none; margin-top: 20px;">
+  <h2>Withdrawal Requests</h2>
+
+  <div style="margin-bottom: 10px;">
+    <button onclick="approveSelectedWithdrawals()">✅ Approve Selected</button>
+    <button onclick="approveAllWithdrawals()">✅ Approve All</button>
+    <label style="margin-left: 10px;">
+      <input type="checkbox" id="auto-approve-toggle" onchange="toggleAutoApprove()"> Auto-Approve New
+    </label>
+  </div>
+
+  <table border="1">
+    <thead>
+      <tr>
+        <th><input type="checkbox" id="select-all" onchange="toggleSelectAll(this)"></th>
+        <th>Email</th>
+        <th>Amount</th>
+        <th>Wallet</th>
+        <th>Status</th>
+        <th>Date</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="withdrawals-table">
+      <!-- Fetched rows -->
+    </tbody>
+  </table>
+</div>
       
       <button id="dashboard-logout-btn">Logout</button>
     </div>
