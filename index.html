@@ -30,6 +30,7 @@
         <input type="text" id="fp-username" placeholder="Enter username" />
         <button onclick="sendResetOtp()">Send OTP</button>
         <p id="fp-message"></p>
+        <button onclick="showLoginForm()">Back to Login</button>
       </div>
 
       <!-- Step 2: Enter OTP -->
@@ -38,6 +39,7 @@
         <input type="text" id="fp-otp" placeholder="Enter OTP" />
         <button onclick="verifyResetOtp()">Verify OTP</button>
         <p id="otp-message"></p>
+        <button onclick="showLoginForm()">Back to Login</button>
       </div>
 
       <!-- Step 3: Enter New Password -->
@@ -46,6 +48,7 @@
         <input type="password" id="fp-new-password" placeholder="Enter new password" />
         <button onclick="updatePassword()">Update Password</button>
         <p id="newpass-message"></p>
+        <button onclick="showLoginForm()">Back to Login</button>
       </div>
     </div>
 
