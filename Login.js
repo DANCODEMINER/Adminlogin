@@ -19,8 +19,8 @@ function loginAdmin() {
         document.getElementById("login-message").innerText = "❌ " + data.error;
       } else {
         document.getElementById("login-message").innerText = "✅ Login successful!";
-        showDashboard(); // ✅ show dashboard on success
-        sessionStorage.setItem("admin", username); // optional
+        showDashboard();
+        sessionStorage.setItem("admin", username);
       }
     })
     .catch(() => {
@@ -48,7 +48,7 @@ function sendResetOtp() {
       } else {
         sessionStorage.setItem("fp-username", username);
         document.getElementById("fp-message").innerText = "✅ OTP sent to admin email.";
-        document.getElementById("fp-username-form").style.display = "none"; // ✅ fixed ID
+        document.getElementById("fp-username-form").style.display = "none";
         document.getElementById("otp-form").style.display = "block";
       }
     })
@@ -117,6 +117,11 @@ function updatePassword() {
       } else {
         document.getElementById("newpass-message").innerText = "✅ Password updated successfully.";
         sessionStorage.removeItem("fp-username");
+
+        // Redirect to login after short delay
+        setTimeout(() => {
+          showLoginForm();
+        }, 1500);
       }
     })
     .catch(() => {
@@ -131,11 +136,30 @@ function showDashboard() {
   document.getElementById("dashboard-section").style.display = "block";
 }
 
-// Reset to login view on logout
+// Back to login view from any form
+function showLoginForm() {
+  document.getElementById("login-form").style.display = "block";
+  document.getElementById("forgot-password-section").style.display = "none";
+  document.getElementById("fp-username-form").style.display = "block";
+  document.getElementById("otp-form").style.display = "none";
+  document.getElementById("new-password-form").style.display = "none";
+  document.getElementById("dashboard-section").style.display = "none";
+
+  // Clear all messages and inputs
+  document.getElementById("login-message").innerText = "";
+  document.getElementById("fp-message").innerText = "";
+  document.getElementById("otp-message").innerText = "";
+  document.getElementById("newpass-message").innerText = "";
+
+  document.getElementById("fp-username").value = "";
+  document.getElementById("fp-otp").value = "";
+  document.getElementById("fp-new-password").value = "";
+}
+
+// Logout
 function logoutAdmin() {
   document.getElementById("dashboard-section").style.display = "none";
   document.getElementById("login-form").style.display = "block";
-
   sessionStorage.clear();
 
   document.getElementById("admin-login-username").value = "";
