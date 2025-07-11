@@ -125,3 +125,40 @@ function updatePassword() {
     document.getElementById("newpass-message").innerText = "❌ Failed to update password.";
   });
 }
+
+// Run after DOM loaded
+document.addEventListener("DOMContentLoaded", () => {
+  // Elements
+  const forgotPasswordBtn = document.getElementById("forgot-password-btn");
+  const loginForm = document.getElementById("login-form");
+  const forgotPasswordSection = document.getElementById("forgot-password-section");
+  const dashboardSection = document.getElementById("dashboard-section");
+  const logoutBtn = document.getElementById("dashboard-logout-btn"); // assign an id in HTML (see below)
+
+  // Show forgot password section & hide login form
+  forgotPasswordBtn.addEventListener("click", () => {
+    loginForm.style.display = "none";
+    forgotPasswordSection.style.display = "block";
+  });
+
+  // Logout handler
+  logoutBtn.addEventListener("click", () => {
+    dashboardSection.style.display = "none";
+    loginForm.style.display = "block";
+
+    // Clear sessionStorage etc
+    sessionStorage.clear();
+
+    // Clear login inputs and messages
+    document.getElementById("admin-login-username").value = "";
+    document.getElementById("admin-login-password").value = "";
+    document.getElementById("login-message").innerText = "";
+  });
+});
+
+// Call this function from your login success handler
+function showDashboard() {
+  document.getElementById("login-form").style.display = "none";
+  document.getElementById("forgot-password-section").style.display = "none";
+  document.getElementById("dashboard-section").style.display = "block";
+}
