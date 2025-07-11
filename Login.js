@@ -234,3 +234,31 @@ function showWithdrawals() {
       });
     });
 }
+
+function toggleMessageForm() {
+  const form = document.getElementById("message-form-section");
+  form.style.display = form.style.display === "none" ? "block" : "none";
+}
+
+function postMessage() {
+  const title = document.getElementById("msg-title").value.trim();
+  const content = document.getElementById("msg-content").value.trim();
+  const statusEl = document.getElementById("message-status");
+
+  if (!title || !content) {
+    statusEl.innerText = "❌ Title and content required.";
+    return;
+  }
+
+  fetch("https://danoski-backend.onrender.com/admin/add-message", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title, content })
+  })
+    .then(res => res.json())
+    .then(data => {
+      statusEl.innerText = data.message || data.error;
+      document.getElementById("msg-title").value = "";
+      document.getElementById("msg-content").value = "";
+    });
+}
