@@ -172,19 +172,6 @@ function logoutAdmin() {
   document.getElementById("login-message").innerText = "";
 }
 
-// Setup listeners after DOM is ready
-document.addEventListener("DOMContentLoaded", () => {
-  const forgotPasswordBtn = document.getElementById("forgot-password-btn");
-  const logoutBtn = document.getElementById("dashboard-logout-btn");
-
-  forgotPasswordBtn.addEventListener("click", () => {
-    document.getElementById("login-form").style.display = "none";
-    document.getElementById("forgot-password-section").style.display = "block";
-  });
-
-  logoutBtn.addEventListener("click", logoutAdmin);
-});
-
 function showUsers() {
   document.getElementById("users-section").style.display = "block";
   fetchUsers();
@@ -421,12 +408,30 @@ function toggleSection(id) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Auto-login if admin is already logged in
   const admin = sessionStorage.getItem("admin");
-
   if (admin) {
     showDashboard();
-    showWithdrawals();
+    showWithdrawals(); // Load withdrawals immediately if needed
   }
+
+  // Setup Forgot Password button
+  const forgotPasswordBtn = document.getElementById("forgot-password-btn");
+  if (forgotPasswordBtn) {
+    forgotPasswordBtn.addEventListener("click", () => {
+      document.getElementById("login-form").style.display = "none";
+      document.getElementById("forgot-password-section").style.display = "block";
+    });
+  }
+
+  // Setup Logout button
+  const logoutBtn = document.getElementById("dashboard-logout-btn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", logoutAdmin);
+  }
+
+  // Load messages (optional)
+  loadMessages?.();
 });
 
 function closeSection(id) {
