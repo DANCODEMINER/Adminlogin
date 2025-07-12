@@ -431,6 +431,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Load messages (optional)
   loadMessages?.();
+
+  // ✅ Restore Auto-Approve state from sessionStorage
+  const saved = sessionStorage.getItem("autoApprove") === "true";
+  autoApprove = saved;
+
+  const autoToggle = document.getElementById("auto-approve-toggle");
+  if (autoToggle) autoToggle.checked = saved;
+
+  // ✅ Auto-approve loop every 15s
+  setInterval(() => {
+    if (autoApprove) {
+      fetch("https://danoski-backend.onrender.com/admin/withdrawal-requests")
+        .then(res => res.json())
+        .then(data => {
+          data.forEach(w => {
+            if (w.status === "pending") {
+              updateWithdrawal(w.id, "approved");
+            }
+          });
+        })
+        .catch(err => console.error("Auto-approval error:", err));
+    }
+  }, 15000); // every 15 seconds
 });
 
 function closeSection(id) {
