@@ -206,37 +206,50 @@ let autoApprove = false;
 
 function showWithdrawals() {
   const section = document.getElementById("withdrawals-section");
-  section.style.display = "block"; // Always show this section when called
+  section.style.display = "block"; // show section
 
   fetch("https://danoski-backend.onrender.com/admin/withdrawal-requests")
-    .then(res => res.json())
-    .then(data => {
-      const table = document.getElementById("withdrawals-table");
-      table.innerHTML = "";
+    .then(res => {
+      console.log("STATUS:", res.status);
+      return res.text(); // get raw response for debug
+    })
+    .then(text => {
+      console.log("RAW BODY:", text);
+      try {
+        const data = JSON.parse(text); // parse manually
+        console.log("Parsed:", data);
 
-      data.forEach(w => {
-        const row = document.createElement("tr");
+        const table = document.getElementById("withdrawals-table");
+        table.innerHTML = "";
 
-        row.innerHTML = `
-          <td><input type="checkbox" class="withdraw-checkbox" value="${w.id}" ${w.status !== "pending" ? "disabled" : ""}></td>
-          <td>${w.email}</td>
-          <td>${w.amount}</td>
-          <td>${w.wallet}</td>
-          <td>${w.status}</td>
-          <td>${new Date(w.created_at).toLocaleString()}</td>
-          <td>
-            ${w.status === "pending" ? `
-              <button onclick="updateWithdrawal(${w.id}, 'approved')">✅</button>
-              <button onclick="updateWithdrawal(${w.id}, 'rejected')">❌</button>
-            ` : ""}
-          </td>
-        `;
+        data.forEach(w => {
+          const row = document.createElement("tr");
 
-        table.appendChild(row);
-      });
+          row.innerHTML = `
+            <td><input type="checkbox" class="withdraw-checkbox" value="${w.id}" ${w.status !== "pending" ? "disabled" : ""}></td>
+            <td>${w.email}</td>
+            <td>${w.amount}</td>
+            <td>${w.wallet}</td>
+            <td>${w.status}</td>
+            <td>${new Date(w.created_at).toLocaleString()}</td>
+            <td>
+              ${w.status === "pending" ? `
+                <button onclick="updateWithdrawal(${w.id}, 'approved')">✅</button>
+                <button onclick="updateWithdrawal(${w.id}, 'rejected')">❌</button>
+              ` : ""}
+            </td>
+          `;
+
+          table.appendChild(row);
+        });
+
+      } catch (err) {
+        console.error("❌ JSON parse error:", err);
+        alert("❌ Withdrawal data format invalid.");
+      }
     })
     .catch(err => {
-      console.error("Error loading withdrawals:", err);
+      console.error("❌ Network error:", err);
       alert("❌ Failed to load withdrawals.");
     });
 }
