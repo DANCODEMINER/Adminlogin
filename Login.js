@@ -408,14 +408,12 @@ function toggleSection(id) {
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  // Auto-login if admin is already logged in
-  const admin = sessionStorage.getItem("admin");
-  if (admin) {
-    showDashboard();
-  }
+let autoApprove = false;
 
-  // Setup Forgot Password button
+document.addEventListener("DOMContentLoaded", () => {
+  const admin = sessionStorage.getItem("admin");
+  if (admin) showDashboard();
+
   const forgotPasswordBtn = document.getElementById("forgot-password-btn");
   if (forgotPasswordBtn) {
     forgotPasswordBtn.addEventListener("click", () => {
@@ -424,23 +422,19 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Setup Logout button
   const logoutBtn = document.getElementById("dashboard-logout-btn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", logoutAdmin);
-  }
+  if (logoutBtn) logoutBtn.addEventListener("click", logoutAdmin);
 
-  // Load messages (optional)
   loadMessages?.();
 
-  // ✅ Restore Auto-Approve state from sessionStorage
+  // ✅ Restore auto-approve from session
   const saved = sessionStorage.getItem("autoApprove") === "true";
   autoApprove = saved;
 
   const autoToggle = document.getElementById("auto-approve-toggle");
   if (autoToggle) autoToggle.checked = saved;
 
-  // ✅ Auto-approve loop every 15s
+  // ✅ Auto-approve loop
   setInterval(() => {
     if (autoApprove) {
       fetch("https://danoski-backend.onrender.com/admin/withdrawal-requests")
@@ -454,7 +448,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .catch(err => console.error("Auto-approval error:", err));
     }
-  }, 15000); // every 15 seconds
+  }, 15000);
 });
 
 function closeSection(id) {
