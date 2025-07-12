@@ -396,11 +396,24 @@ window.onload = () => {
 };
 
 function toggleSection(id) {
+  // Hide all sections first
   const sections = document.querySelectorAll('.admin-container');
   sections.forEach(sec => sec.style.display = 'none');
-  document.getElementById(id).style.display = 'block';
+
+  // Show the selected section
+  const target = document.getElementById(id);
+  if (target) {
+    target.style.display = 'block';
+    document.querySelector('#dashboard-section > h2').style.display = 'none';
+    document.querySelector('.admin-nav').style.display = 'none';
+  }
 }
 
 function closeSection(id) {
-  document.getElementById(id).style.display = 'none';
+  const section = document.getElementById(id);
+  if (section) {
+    section.style.display = 'none';
+    document.querySelector('#dashboard-section > h2').style.display = 'block';
+    document.querySelector('.admin-nav').style.display = 'block';
+  }
 }
