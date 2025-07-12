@@ -394,3 +394,13 @@ function updateHashrate() {
 window.onload = () => {
   loadCurrentHashrate();
 };
+
+function toggleSection(id) {
+  const sections = document.querySelectorAll('.admin-container');
+  sections.forEach(sec => sec.style.display = 'none');
+  document.getElementById(id).style.display = 'block';
+}
+
+function closeSection(id) {
+  document.getElementById(id).style.display = 'none';
+}
