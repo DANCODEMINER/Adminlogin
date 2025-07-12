@@ -456,3 +456,13 @@ function closeSection(id) {
     document.querySelector('.admin-nav').style.display = 'block';
   }
 }
+
+// STEP 2: Auto-login admin dashboard on page load if session exists
+window.addEventListener("DOMContentLoaded", () => {
+  const loggedIn = sessionStorage.getItem("adminLoggedIn");
+
+  if (loggedIn === "true") {
+    document.getElementById("login-section").style.display = "none";
+    document.getElementById("dashboard-section").style.display = "block";
+  }
+});
