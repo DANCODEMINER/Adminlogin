@@ -412,7 +412,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const admin = sessionStorage.getItem("admin");
   if (admin) {
     showDashboard();
-    showWithdrawals(); // Load withdrawals immediately if needed
   }
 
   // Setup Forgot Password button
