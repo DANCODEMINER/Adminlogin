@@ -329,6 +329,9 @@ function toggleAutoApprove() {
 }
 
 function postAnnouncement() {
+  console.log("postAnnouncement() called"); // ✅ For DevTools console
+  alert("📬 Post button clicked"); // ✅ For user popup feedback
+
   const title = document.getElementById("announce-title").value.trim();
   const content = document.getElementById("announce-content").value.trim();
 
@@ -345,6 +348,10 @@ function postAnnouncement() {
   .then(res => res.json())
   .then(data => {
     document.getElementById("announce-status").innerText = data.message || data.error;
+  })
+  .catch(error => {
+    console.error("Post failed:", error);
+    document.getElementById("announce-status").innerText = "❌ Failed to send announcement.";
   });
 }
 
