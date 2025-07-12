@@ -138,12 +138,13 @@
   </table>
 </div>
 
-      <div style="margin-top: 40px;">
-  <h2>Set Hashrate Per Ad</h2>
-  <input type="number" id="hashrate-value" placeholder="Enter new hashrate" />
-  <button onclick="updateHashrate()">Update Hashrate</button>
-  <p id="hashrate-msg"></p>
-      </div>
+      <h2>Set Hashrate Per Ad</h2>
+
+<p>Current Hashrate: <span id="current-hashrate">Loading...</span> H/s</p>
+
+<input type="number" id="hashrate-value" placeholder="Enter hashrate value" />
+<button onclick="updateHashrate()">Update</button>
+<p id="hashrate-msg" style="color: green;"></p>
       
       <button id="dashboard-logout-btn">Logout</button>
     </div>
