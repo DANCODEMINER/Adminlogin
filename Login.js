@@ -289,7 +289,7 @@ function updateWithdrawal(id, status) {
 function toggleAutoApprove() {
   const isChecked = document.getElementById("auto-approve-toggle").checked;
   autoApprove = isChecked;
-  sessionStorage.setItem("autoApprove", isChecked); // ✅ Save to session
+  sessionStorage.setItem("autoApprove", isChecked.toString()); // 🔧 Correct
 }
 
 function postAnnouncement() {
