@@ -1,4 +1,9 @@
-// Login Admin
+// ========== Session Check on Load ==========
+if (sessionStorage.getItem("admin")) {
+  showDashboard();
+}
+
+// ========== Admin Login ==========
 function loginAdmin() {
   const username = document.getElementById("admin-login-username").value.trim();
   const password = document.getElementById("admin-login-password").value.trim();
@@ -18,9 +23,8 @@ function loginAdmin() {
       if (data.error) {
         document.getElementById("login-message").innerText = "❌ " + data.error;
       } else {
-        document.getElementById("login-message").innerText = "✅ Login successful!";
         sessionStorage.setItem("admin", username);
-        sessionStorage.setItem("currentView", "dashboard");
+        document.getElementById("login-message").innerText = "✅ Login successful!";
         showDashboard();
       }
     })
@@ -29,7 +33,24 @@ function loginAdmin() {
     });
 }
 
-// Step 1: Send reset OTP
+// ========== Show Dashboard ==========
+function showDashboard() {
+  document.getElementById("login-form").style.display = "none";
+  document.getElementById("forgot-password-section").style.display = "none";
+  document.getElementById("dashboard-section").style.display = "block";
+}
+
+// ========== Logout ==========
+function logoutAdmin() {
+  sessionStorage.clear();
+  document.getElementById("dashboard-section").style.display = "none";
+  document.getElementById("login-form").style.display = "block";
+  document.getElementById("admin-login-username").value = "";
+  document.getElementById("admin-login-password").value = "";
+  document.getElementById("login-message").innerText = "";
+}
+
+// ========== Forgot Password Flow ==========
 function sendResetOtp() {
   const username = document.getElementById("fp-username").value.trim();
   if (!username) {
@@ -58,19 +79,12 @@ function sendResetOtp() {
     });
 }
 
-// Step 2: Verify OTP
 function verifyResetOtp() {
   const otp = document.getElementById("fp-otp").value.trim();
   const username = sessionStorage.getItem("fp-username");
 
-  if (!otp) {
-    document.getElementById("otp-message").innerText = "❌ Please enter the OTP.";
-    return;
-  }
-  if (!username) {
-    document.getElementById("otp-message").innerText = "❌ Username missing, please restart.";
-    return;
-  }
+  if (!otp) return (document.getElementById("otp-message").innerText = "❌ Please enter the OTP.");
+  if (!username) return (document.getElementById("otp-message").innerText = "❌ Username missing.");
 
   fetch("https://danoski-backend.onrender.com/admin/verify-reset-otp", {
     method: "POST",
@@ -86,25 +100,15 @@ function verifyResetOtp() {
         document.getElementById("otp-form").style.display = "none";
         document.getElementById("new-password-form").style.display = "block";
       }
-    })
-    .catch(() => {
-      document.getElementById("otp-message").innerText = "❌ Failed to verify OTP.";
     });
 }
 
-// Step 3: Update password
 function updatePassword() {
   const newPassword = document.getElementById("fp-new-password").value.trim();
   const username = sessionStorage.getItem("fp-username");
 
-  if (!newPassword) {
-    document.getElementById("newpass-message").innerText = "❌ Please enter the new password.";
-    return;
-  }
-  if (!username) {
-    document.getElementById("newpass-message").innerText = "❌ Username missing, please restart.";
-    return;
-  }
+  if (!newPassword) return (document.getElementById("newpass-message").innerText = "❌ Please enter new password.");
+  if (!username) return (document.getElementById("newpass-message").innerText = "❌ Username missing.");
 
   fetch("https://danoski-backend.onrender.com/admin/update-password", {
     method: "POST",
@@ -116,23 +120,14 @@ function updatePassword() {
       if (data.error) {
         document.getElementById("newpass-message").innerText = "❌ " + data.error;
       } else {
-        document.getElementById("newpass-message").innerText = "✅ Password updated successfully.";
         sessionStorage.removeItem("fp-username");
-        setTimeout(() => showLoginForm(), 1500);
+        document.getElementById("newpass-message").innerText = "✅ Password updated.";
+        setTimeout(showLoginForm, 1500);
       }
-    })
-    .catch(() => {
-      document.getElementById("newpass-message").innerText = "❌ Failed to update password.";
     });
 }
 
-function showDashboard() {
-  document.getElementById("login-form").style.display = "none";
-  document.getElementById("forgot-password-section").style.display = "none";
-  document.getElementById("dashboard-section").style.display = "block";
-  sessionStorage.setItem("currentView", "dashboard");
-}
-
+// ========== Back to Login ==========
 function showLoginForm() {
   document.getElementById("login-form").style.display = "block";
   document.getElementById("forgot-password-section").style.display = "none";
@@ -140,95 +135,17 @@ function showLoginForm() {
   document.getElementById("otp-form").style.display = "none";
   document.getElementById("new-password-form").style.display = "none";
   document.getElementById("dashboard-section").style.display = "none";
+
+  document.getElementById("fp-username").value = "";
+  document.getElementById("fp-otp").value = "";
+  document.getElementById("fp-new-password").value = "";
   document.getElementById("login-message").innerText = "";
   document.getElementById("fp-message").innerText = "";
   document.getElementById("otp-message").innerText = "";
   document.getElementById("newpass-message").innerText = "";
-  document.getElementById("fp-username").value = "";
-  document.getElementById("fp-otp").value = "";
-  document.getElementById("fp-new-password").value = "";
 }
 
-function logoutAdmin() {
-  document.getElementById("dashboard-section").style.display = "none";
-  document.getElementById("login-form").style.display = "block";
-  sessionStorage.clear();
-  document.getElementById("admin-login-username").value = "";
-  document.getElementById("admin-login-password").value = "";
-  document.getElementById("login-message").innerText = "";
-}
-
-function showWithdrawals() {
-  const section = document.getElementById("withdrawals-section");
-  section.style.display = "block";
-  fetch("https://danoski-backend.onrender.com/admin/withdrawals")
-    .then(res => res.json())
-    .then(data => {
-      const table = document.getElementById("withdrawals-table");
-      table.innerHTML = "";
-      data.forEach(w => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td><input type="checkbox" class="withdraw-checkbox" value="${w.id}" ${w.status !== "pending" ? "disabled" : ""}></td>
-          <td>${w.email}</td>
-          <td>${w.amount}</td>
-          <td>${w.wallet}</td>
-          <td>${w.status}</td>
-          <td>${new Date(w.created_at).toLocaleString()}</td>
-          <td>
-            ${w.status === "pending" ? `
-              <button onclick="updateWithdrawal(${w.id}, 'approved')">✅</button>
-              <button onclick="updateWithdrawal(${w.id}, 'rejected')">❌</button>
-            ` : ""}
-          </td>
-        `;
-        table.appendChild(row);
-        if (w.status === "pending" && autoApprove) updateWithdrawal(w.id, 'approved');
-      });
-    });
-}
-
-function approveAllWithdrawals() {
-  fetch("https://danoski-backend.onrender.com/admin/withdrawals")
-    .then(res => res.json())
-    .then(data => {
-      const pending = data.filter(w => w.status === "pending");
-      if (pending.length === 0) return alert("No pending withdrawals to approve.");
-      let completed = 0;
-      pending.forEach(w => updateWithdrawal(w.id, "approved", () => {
-        completed++;
-        if (completed === pending.length) showWithdrawals();
-      }));
-    });
-}
-
-function updateWithdrawal(id, status, callback) {
-  fetch("https://danoski-backend.onrender.com/admin/update-withdrawal", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id, status })
-  })
-    .then(res => res.json())
-    .then(() => typeof callback === "function" && callback());
-}
-
-function toggleSelectAll(source) {
-  document.querySelectorAll(".withdraw-checkbox").forEach(cb => {
-    if (!cb.disabled) cb.checked = source.checked;
-  });
-}
-
-function approveSelectedWithdrawals() {
-  const selected = Array.from(document.querySelectorAll(".withdraw-checkbox:checked")).map(cb => parseInt(cb.value));
-  if (selected.length === 0) return alert("No withdrawals selected.");
-  selected.forEach(id => updateWithdrawal(id, "approved"));
-}
-
-function toggleAutoApprove() {
-  autoApprove = document.getElementById("auto-approve-toggle").checked;
-  showWithdrawals();
-}
-
+// ========== User List ==========
 function showUsers() {
   document.getElementById("users-section").style.display = "block";
   fetch("https://danoski-backend.onrender.com/admin/users")
@@ -247,10 +164,89 @@ function showUsers() {
         `;
         table.appendChild(row);
       });
-    })
-    .catch(() => alert("❌ Failed to load users."));
+    });
 }
 
+// ========== Withdrawals ==========
+let autoApprove = false;
+
+function showWithdrawals() {
+  const section = document.getElementById("withdrawals-section");
+  section.style.display = "block";
+
+  const backBtn = document.getElementById("withdrawals-back-btn");
+  if (backBtn) backBtn.style.display = "inline-block";
+
+  fetch("https://danoski-backend.onrender.com/admin/withdrawals")
+    .then(res => res.json())
+    .then(data => {
+      const table = document.getElementById("withdrawals-table");
+      table.innerHTML = "";
+      data.forEach(w => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td><input type="checkbox" class="withdraw-checkbox" value="${w.id}" ${w.status !== "pending" ? "disabled" : ""}></td>
+          <td>${w.email}</td>
+          <td>${w.amount}</td>
+          <td>${w.wallet}</td>
+          <td>${w.status}</td>
+          <td>${new Date(w.created_at).toLocaleString()}</td>
+          <td>${w.status === "pending" ? `<button onclick="updateWithdrawal(${w.id}, 'approved')">✅</button>
+                                           <button onclick="updateWithdrawal(${w.id}, 'rejected')">❌</button>` : ""}</td>
+        `;
+        table.appendChild(row);
+        if (w.status === "pending" && autoApprove) updateWithdrawal(w.id, 'approved');
+      });
+    });
+}
+
+function toggleSelectAll(source) {
+  const checkboxes = document.querySelectorAll(".withdraw-checkbox");
+  checkboxes.forEach(cb => {
+    if (!cb.disabled) cb.checked = source.checked;
+  });
+}
+
+function approveSelectedWithdrawals() {
+  const selected = [...document.querySelectorAll(".withdraw-checkbox:checked")].map(cb => +cb.value);
+  if (selected.length === 0) return alert("No withdrawals selected.");
+  selected.forEach(id => updateWithdrawal(id, "approved"));
+}
+
+function approveAllWithdrawals() {
+  fetch("https://danoski-backend.onrender.com/admin/withdrawals")
+    .then(res => res.json())
+    .then(data => {
+      const pending = data.filter(w => w.status === "pending");
+      if (!pending.length) return alert("No pending withdrawals.");
+      let done = 0;
+      pending.forEach(w => {
+        updateWithdrawal(w.id, "approved", () => {
+          done++;
+          if (done === pending.length) showWithdrawals();
+        });
+      });
+    });
+}
+
+function updateWithdrawal(id, status, callback) {
+  fetch("https://danoski-backend.onrender.com/admin/update-withdrawal", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id, status })
+  })
+    .then(res => res.json())
+    .then(() => {
+      if (typeof callback === "function") callback();
+    });
+}
+
+function toggleAutoApprove() {
+  autoApprove = document.getElementById("auto-approve-toggle").checked;
+  showWithdrawals();
+}
+
+// ========== Announcements ==========
 function postAnnouncement() {
   const title = document.getElementById("announce-title").value.trim();
   const content = document.getElementById("announce-content").value.trim();
@@ -258,18 +254,22 @@ function postAnnouncement() {
     document.getElementById("announce-status").innerText = "❌ Title and content required.";
     return;
   }
+
   fetch("https://danoski-backend.onrender.com/admin/add-message", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ title, content })
   })
     .then(res => res.json())
-    .then(data => document.getElementById("announce-status").innerText = data.message || data.error);
+    .then(data => {
+      document.getElementById("announce-status").innerText = data.message || data.error;
+    });
 }
 
 function deleteAnnouncement() {
   fetch("https://danoski-backend.onrender.com/admin/delete-message", {
-    method: "DELETE" })
+    method: "DELETE"
+  })
     .then(res => res.json())
     .then(data => {
       document.getElementById("announce-status").innerText = data.message || data.error;
@@ -278,21 +278,28 @@ function deleteAnnouncement() {
     });
 }
 
+// ========== Hashrate ==========
 function loadCurrentHashrate() {
   fetch("https://danoski-backend.onrender.com/admin/get-hashrate")
     .then(res => res.json())
-    .then(data => document.getElementById("current-hashrate").innerText = data.hashrate)
-    .catch(() => document.getElementById("current-hashrate").innerText = "Error");
+    .then(data => {
+      document.getElementById("current-hashrate").innerText = data.hashrate;
+    })
+    .catch(() => {
+      document.getElementById("current-hashrate").innerText = "Error";
+    });
 }
 
 function updateHashrate() {
   const value = document.getElementById("hashrate-value").value;
   const msg = document.getElementById("hashrate-msg");
+
   if (!value || isNaN(value) || value <= 0) {
     msg.innerText = "❌ Enter a valid hashrate.";
     msg.style.color = "red";
     return;
   }
+
   fetch("https://danoski-backend.onrender.com/admin/set-hashrate", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -310,36 +317,27 @@ function updateHashrate() {
     });
 }
 
+// ========== Toggle Sections ==========
 function toggleSection(id) {
-  document.querySelectorAll('.admin-container').forEach(sec => sec.style.display = 'none');
+  document.querySelectorAll(".admin-container").forEach(sec => sec.style.display = "none");
   const target = document.getElementById(id);
   if (target) {
-    target.style.display = 'block';
-    document.querySelector('#dashboard-section > h2').style.display = 'none';
-    document.querySelector('.admin-nav').style.display = 'none';
+    target.style.display = "block";
+    document.querySelector("#dashboard-section > h2").style.display = "none";
+    document.querySelector(".admin-nav").style.display = "none";
   }
 }
 
 function closeSection(id) {
   const section = document.getElementById(id);
   if (section) {
-    section.style.display = 'none';
-    document.querySelector('#dashboard-section > h2').style.display = 'block';
-    document.querySelector('.admin-nav').style.display = 'block';
+    section.style.display = "none";
+    document.querySelector("#dashboard-section > h2").style.display = "block";
+    document.querySelector(".admin-nav").style.display = "block";
   }
 }
 
-// Persist login and dashboard state on reload
-window.addEventListener("DOMContentLoaded", () => {
-  const user = sessionStorage.getItem("admin");
-  const view = sessionStorage.getItem("currentView");
-  if (user && view === "dashboard") {
-    showDashboard();
-  }
-  document.getElementById("forgot-password-btn").addEventListener("click", () => {
-    document.getElementById("login-form").style.display = "none";
-    document.getElementById("forgot-password-section").style.display = "block";
-  });
-  document.getElementById("dashboard-logout-btn").addEventListener("click", logoutAdmin);
+// ========== Load Hashrate on Load ==========
+window.onload = () => {
   loadCurrentHashrate();
-});
+};
