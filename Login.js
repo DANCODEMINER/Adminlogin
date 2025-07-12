@@ -429,16 +429,18 @@ function loadCurrentAnnouncement() {
 }
 
 function toggleSection(id) {
-  // Hide all sections first
   const sections = document.querySelectorAll('.admin-container');
   sections.forEach(sec => sec.style.display = 'none');
 
-  // Show the selected section
   const target = document.getElementById(id);
   if (target) {
     target.style.display = 'block';
     document.querySelector('#dashboard-section > h2').style.display = 'none';
     document.querySelector('.admin-nav').style.display = 'none';
+
+    if (id === "announcement-section") {
+      loadCurrentAnnouncement(); // ✅ Call the function here
+    }
   }
 }
 
