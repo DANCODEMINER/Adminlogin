@@ -205,20 +205,14 @@ function fetchUsers() {
 let autoApprove = false;
 
 function showWithdrawals() {
-  // Hide all other sections
-  const sections = document.querySelectorAll('.admin-container');
-  sections.forEach(sec => sec.style.display = 'none');
-
-  // Show the withdrawal section
   const section = document.getElementById("withdrawals-section");
-  section.style.display = "block";
+  section.style.display = "block"; // Always show this section when called
 
-  // Load withdrawals
   fetch("https://danoski-backend.onrender.com/admin/withdrawal-requests")
     .then(res => res.json())
     .then(data => {
       const table = document.getElementById("withdrawals-table");
-      table.innerHTML = ""; // Clear old rows
+      table.innerHTML = "";
 
       data.forEach(w => {
         const row = document.createElement("tr");
@@ -239,11 +233,6 @@ function showWithdrawals() {
         `;
 
         table.appendChild(row);
-
-        // Auto-approve logic
-        if (w.status === "pending" && autoApprove) {
-          updateWithdrawal(w.id, 'approved');
-        }
       });
     })
     .catch(err => {
@@ -251,7 +240,6 @@ function showWithdrawals() {
       alert("❌ Failed to load withdrawals.");
     });
 }
-
 
 function toggleSelectAll(source) {
   const checkboxes = document.querySelectorAll(".withdraw-checkbox");
