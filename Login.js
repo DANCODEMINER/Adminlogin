@@ -450,14 +450,19 @@ function toggleSection(id) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const isAdminLoggedIn = sessionStorage.getItem("adminLoggedIn") === "true";
+  const adminUsername = sessionStorage.getItem("admin");
 
-  if (isAdminLoggedIn) {
-    document.getElementById("login-section").style.display = "none";
-    document.getElementById("dashboard-section").style.display = "block";
+  const loginSection = document.getElementById("login-section");
+  const dashboardSection = document.getElementById("dashboard-section");
+
+  if (adminUsername) {
+    // Admin is logged in
+    loginSection.style.display = "none";
+    dashboardSection.style.display = "block";
   } else {
-    document.getElementById("login-section").style.display = "block";
-    document.getElementById("dashboard-section").style.display = "none";
+    // Not logged in
+    loginSection.style.display = "block";
+    dashboardSection.style.display = "none";
   }
 });
 
