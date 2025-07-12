@@ -462,7 +462,14 @@ window.addEventListener("DOMContentLoaded", () => {
   const loggedIn = sessionStorage.getItem("adminLoggedIn");
 
   if (loggedIn === "true") {
-    document.getElementById("login-section").style.display = "none";
-    document.getElementById("dashboard-section").style.display = "block";
+    const loginSection = document.getElementById("login-section");
+    const dashboardSection = document.getElementById("dashboard-section");
+
+    if (loginSection && dashboardSection) {
+      loginSection.style.display = "none";
+      dashboardSection.style.display = "block";
+    } else {
+      console.warn("Login or dashboard section not found in DOM.");
+    }
   }
 });
