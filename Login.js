@@ -288,7 +288,7 @@ function updateWithdrawal(id, status) {
 
 function toggleAutoApprove() {
   autoApprove = document.getElementById("auto-approve-toggle").checked;
-  showWithdrawals();
+  sessionStorage.setItem("autoApprove", autoApprove);
 }
 
 function postAnnouncement() {
