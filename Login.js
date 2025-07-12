@@ -453,19 +453,17 @@ function closeSection(id) {
   }
 }
 
-// STEP 2: Auto-login admin dashboard on page load if session exists
+// STEP 1: Auto-load dashboard if session exists
 window.addEventListener("DOMContentLoaded", () => {
-  const loggedIn = sessionStorage.getItem("adminLoggedIn");
+  const adminUsername = sessionStorage.getItem("admin");
 
-  if (loggedIn === "true") {
-    const loginSection = document.getElementById("login-section");
-    const dashboardSection = document.getElementById("dashboard-section");
+  if (adminUsername) {
+    document.getElementById("login-section").style.display = "none";
+    document.getElementById("dashboard-section").style.display = "block";
 
-    if (loginSection && dashboardSection) {
-      loginSection.style.display = "none";
-      dashboardSection.style.display = "block";
-    } else {
-      console.warn("Login or dashboard section not found in DOM.");
-    }
+    // Optional: Load dashboard data if needed
+    loadCurrentHashrate();
+    showUsers();
+    showWithdrawals();
   }
 });
