@@ -339,5 +339,10 @@ function closeSection(id) {
 
 // ========== Load Hashrate on Load ==========
 window.onload = () => {
-  loadCurrentHashrate();
+  loadCurrentHashrate(); // already here
+
+  // ✅ Show dashboard if session exists
+  if (sessionStorage.getItem("admin")) {
+    showDashboard();
+  }
 };
