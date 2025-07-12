@@ -8,137 +8,132 @@
 </head>
 <body>
   <div class="login-container">
-    <h2>Admin Login</h2>
 
-    <!-- Login Form -->
+    <!-- LOGIN FORM -->
     <div id="login-form">
+      <h2>Admin Login</h2>
       <input type="text" id="admin-login-username" placeholder="Username" autocomplete="username" />
       <input type="password" id="admin-login-password" placeholder="Password" autocomplete="current-password" />
       <button onclick="loginAdmin()">Login</button>
-
       <button id="forgot-password-btn" type="button">Forgot Password?</button>
-
       <p id="login-message"></p>
     </div>
 
-    <!-- Forgot Password Forms (hidden initially) -->
-    <div id="forgot-password-section" style="display:none; margin-top: 2rem; text-align:left;">
-      
-      <!-- Step 1: Enter Username -->
+    <!-- FORGOT PASSWORD SECTION -->
+    <div id="forgot-password-section" style="display:none;">
+      <!-- Step 1 -->
       <div id="fp-username-form">
         <h3>Forgot Password - Step 1</h3>
         <input type="text" id="fp-username" placeholder="Enter username" />
         <button onclick="sendResetOtp()">Send OTP</button>
         <p id="fp-message"></p>
-        <button onclick="showLoginForm()">Back to Login</button>
+        <button onclick="showLoginForm()">🔙 Back to Login</button>
       </div>
 
-      <!-- Step 2: Enter OTP -->
+      <!-- Step 2 -->
       <div id="otp-form" style="display:none;">
         <h3>Forgot Password - Step 2</h3>
         <input type="text" id="fp-otp" placeholder="Enter OTP" />
         <button onclick="verifyResetOtp()">Verify OTP</button>
         <p id="otp-message"></p>
-        <button onclick="showLoginForm()">Back to Login</button>
+        <button onclick="showLoginForm()">🔙 Back to Login</button>
       </div>
 
-      <!-- Step 3: Enter New Password -->
+      <!-- Step 3 -->
       <div id="new-password-form" style="display:none;">
         <h3>Forgot Password - Step 3</h3>
         <input type="password" id="fp-new-password" placeholder="Enter new password" />
         <button onclick="updatePassword()">Update Password</button>
         <p id="newpass-message"></p>
-        <button onclick="showLoginForm()">Back to Login</button>
+        <button onclick="showLoginForm()">🔙 Back to Login</button>
       </div>
     </div>
 
-    <!-- Admin Dashboard -->
-<div id="dashboard-section" style="display: none; text-align: center; padding: 20px;">
+    <!-- DASHBOARD -->
+    <div id="dashboard-section" style="display: none; padding: 20px; text-align: center;">
+      <h2>Welcome to Admin Dashboard</h2>
 
-  <h2>Welcome to Admin Dashboard</h2>
+      <div class="admin-nav" style="margin-bottom: 20px;">
+        <button onclick="toggleSection('users-section')">👥 View Users</button>
+        <button onclick="toggleSection('withdrawals-section')">💸 View Withdrawals</button>
+        <button onclick="toggleSection('announcement-section')">📢 Announcements</button>
+        <button onclick="toggleSection('hashrate-section')">⚙️ Hashrate Settings</button>
+      </div>
 
-  <!-- Navigation Buttons -->
-  <div style="margin-bottom: 20px;">
-    <button onclick="toggleSection('users-section')">👥 View Users</button>
-    <button onclick="toggleSection('withdrawals-section')">💸 View Withdrawals</button>
-    <button onclick="toggleSection('announcement-section')">📢 Announcements</button>
-    <button onclick="toggleSection('hashrate-section')">⚙️ Hashrate Settings</button>
-  </div>
+      <!-- USERS -->
+      <div id="users-section" class="admin-container" style="display: none;">
+        <h3>Registered Users</h3>
+        <table border="1" width="100%">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>BTC Balance</th>
+              <th>Total Earned</th>
+              <th>Hashrate</th>
+              <th>Last Mined</th>
+            </tr>
+          </thead>
+          <tbody id="users-table"></tbody>
+        </table>
+        <button onclick="closeSection('users-section')">🔙 Back</button>
+      </div>
 
-  <!-- Users Section -->
-  <div id="users-section" class="admin-container" style="display: none;">
-    <h3>Registered Users</h3>
-    <table border="1" width="100%">
-      <thead>
-        <tr>
-          <th>Email</th>
-          <th>BTC Balance</th>
-          <th>Total Earned</th>
-          <th>Hashrate</th>
-          <th>Last Mined</th>
-        </tr>
-      </thead>
-      <tbody id="users-table"></tbody>
-    </table>
-    <button onclick="closeSection('users-section')">🔙 Back</button>
-  </div>
+      <!-- WITHDRAWALS -->
+      <div id="withdrawals-section" class="admin-container" style="display: none;">
+        <h3>Withdrawal Requests</h3>
+        <div style="margin-bottom: 10px;">
+          <button onclick="approveSelectedWithdrawals()">✅ Approve Selected</button>
+          <button onclick="approveAllWithdrawals()">✅ Approve All</button>
+          <label>
+            <input type="checkbox" id="auto-approve-toggle" onchange="toggleAutoApprove()"> Auto-Approve New
+          </label>
+        </div>
+        <table border="1" width="100%">
+          <thead>
+            <tr>
+              <th><input type="checkbox" id="select-all" onchange="toggleSelectAll(this)"></th>
+              <th>Email</th>
+              <th>Amount</th>
+              <th>Wallet</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="withdrawals-table"></tbody>
+        </table>
+        <button onclick="closeSection('withdrawals-section')">🔙 Back</button>
+      </div>
 
-  <!-- Withdrawals Section -->
-  <div id="withdrawals-section" class="admin-container" style="display: none;">
-    <h3>Withdrawal Requests</h3>
+      <!-- ANNOUNCEMENT -->
+      <div id="announcement-section" class="admin-container" style="display: none;">
+        <h3>Post Global Announcement</h3>
+        <input type="text" id="announce-title" placeholder="Title" />
+        <br><br>
+        <textarea id="announce-content" rows="4" cols="50" placeholder="Announcement..."></textarea>
+        <br><br>
+        <button onclick="postAnnouncement()">📬 Post</button>
+        <button onclick="deleteAnnouncement()">🗑️ Delete</button>
+        <p id="announce-status"></p>
+        <button onclick="closeSection('announcement-section')">🔙 Back</button>
+      </div>
 
-    <div style="margin-bottom: 10px;">
-      <button onclick="approveSelectedWithdrawals()">✅ Approve Selected</button>
-      <button onclick="approveAllWithdrawals()">✅ Approve All</button>
-      <label>
-        <input type="checkbox" id="auto-approve-toggle" onchange="toggleAutoApprove()"> Auto-Approve New
-      </label>
+      <!-- HASHRATE -->
+      <div id="hashrate-section" class="admin-container" style="display: none;">
+        <h3>Set Hashrate Per Ad</h3>
+        <p>Current Hashrate: <span id="current-hashrate">Loading...</span> H/s</p>
+        <input type="number" id="hashrate-value" placeholder="Enter new value" />
+        <button onclick="updateHashrate()">Update</button>
+        <p id="hashrate-msg" style="color: green;"></p>
+        <button onclick="closeSection('hashrate-section')">🔙 Back</button>
+      </div>
+
+      <br>
+      <button id="dashboard-logout-btn">🚪 Logout</button>
     </div>
 
-    <table border="1" width="100%">
-      <thead>
-        <tr>
-          <th><input type="checkbox" id="select-all" onchange="toggleSelectAll(this)"></th>
-          <th>Email</th>
-          <th>Amount</th>
-          <th>Wallet</th>
-          <th>Status</th>
-          <th>Date</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="withdrawals-table"></tbody>
-    </table>
-    <button onclick="closeSection('withdrawals-section')">🔙 Back</button>
-  </div>
+  </div> <!-- END login-container -->
 
-  <!-- Announcement Section -->
-  <div id="announcement-section" class="admin-container" style="display: none;">
-    <h3>Post Global Announcement</h3>
-    <input type="text" id="announce-title" placeholder="Title" />
-    <br /><br />
-    <textarea id="announce-content" rows="4" cols="50" placeholder="Announcement..."></textarea>
-    <br /><br />
-    <button onclick="postAnnouncement()">📬 Post</button>
-    <button onclick="deleteAnnouncement()">🗑️ Delete</button>
-    <p id="announce-status"></p>
-    <button onclick="closeSection('announcement-section')">🔙 Back</button>
-  </div>
-
-  <!-- Hashrate Section -->
-  <div id="hashrate-section" class="admin-container" style="display: none;">
-    <h3>Set Hashrate Per Ad</h3>
-    <p>Current Hashrate: <span id="current-hashrate">Loading...</span> H/s</p>
-    <input type="number" id="hashrate-value" placeholder="Enter new value" />
-    <button onclick="updateHashrate()">Update</button>
-    <p id="hashrate-msg" style="color: green;"></p>
-    <button onclick="closeSection('hashrate-section')">🔙 Back</button>
-  </div>
-
-  <br />
-  <button id="dashboard-logout-btn">🚪 Logout</button>
-</div>
-
-    <script src="Login.js"></script>
+  <script src="Login.js"></script>
 </body>
 </html>
