@@ -449,6 +449,18 @@ function toggleSection(id) {
   }
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+  const isAdminLoggedIn = sessionStorage.getItem("adminLoggedIn") === "true";
+
+  if (isAdminLoggedIn) {
+    document.getElementById("login-section").style.display = "none";
+    document.getElementById("dashboard-section").style.display = "block";
+  } else {
+    document.getElementById("login-section").style.display = "block";
+    document.getElementById("dashboard-section").style.display = "none";
+  }
+});
+
 function closeSection(id) {
   const section = document.getElementById(id);
   if (section) {
@@ -457,5 +469,3 @@ function closeSection(id) {
     document.querySelector('.admin-nav').style.display = 'block';
   }
 }
-
-// STEP 1: Auto-load dashboard if session exists
