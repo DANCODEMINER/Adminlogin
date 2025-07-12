@@ -19,8 +19,9 @@ function loginAdmin() {
         document.getElementById("login-message").innerText = "❌ " + data.error;
       } else {
         document.getElementById("login-message").innerText = "✅ Login successful!";
-        showDashboard();
         sessionStorage.setItem("admin", username);
+        sessionStorage.setItem("currentView", "dashboard");
+        showDashboard();
       }
     })
     .catch(() => {
@@ -117,11 +118,7 @@ function updatePassword() {
       } else {
         document.getElementById("newpass-message").innerText = "✅ Password updated successfully.";
         sessionStorage.removeItem("fp-username");
-
-        // Redirect to login after short delay
-        setTimeout(() => {
-          showLoginForm();
-        }, 1500);
+        setTimeout(() => showLoginForm(), 1500);
       }
     })
     .catch(() => {
@@ -129,14 +126,13 @@ function updatePassword() {
     });
 }
 
-// Show dashboard after login
 function showDashboard() {
   document.getElementById("login-form").style.display = "none";
   document.getElementById("forgot-password-section").style.display = "none";
   document.getElementById("dashboard-section").style.display = "block";
+  sessionStorage.setItem("currentView", "dashboard");
 }
 
-// Back to login view from any form
 function showLoginForm() {
   document.getElementById("login-form").style.display = "block";
   document.getElementById("forgot-password-section").style.display = "none";
@@ -144,113 +140,34 @@ function showLoginForm() {
   document.getElementById("otp-form").style.display = "none";
   document.getElementById("new-password-form").style.display = "none";
   document.getElementById("dashboard-section").style.display = "none";
-
-  // Clear all messages and inputs
   document.getElementById("login-message").innerText = "";
   document.getElementById("fp-message").innerText = "";
   document.getElementById("otp-message").innerText = "";
   document.getElementById("newpass-message").innerText = "";
-
   document.getElementById("fp-username").value = "";
   document.getElementById("fp-otp").value = "";
   document.getElementById("fp-new-password").value = "";
 }
 
-// Logout
 function logoutAdmin() {
   document.getElementById("dashboard-section").style.display = "none";
   document.getElementById("login-form").style.display = "block";
   sessionStorage.clear();
-
   document.getElementById("admin-login-username").value = "";
   document.getElementById("admin-login-password").value = "";
   document.getElementById("login-message").innerText = "";
 }
 
-// Setup listeners after DOM is ready
-document.addEventListener("DOMContentLoaded", () => {
-  const forgotPasswordBtn = document.getElementById("forgot-password-btn");
-  const logoutBtn = document.getElementById("dashboard-logout-btn");
-
-  forgotPasswordBtn.addEventListener("click", () => {
-    document.getElementById("login-form").style.display = "none";
-    document.getElementById("forgot-password-section").style.display = "block";
-  });
-
-  logoutBtn.addEventListener("click", logoutAdmin);
-});
-
-function showUsers() {
-  document.getElementById("users-section").style.display = "block";
-  fetchUsers();
-}
-
-function fetchUsers() {
-  fetch("https://danoski-backend.onrender.com/admin/users")
-    .then(res => res.json())
-    .then(data => {
-      const table = document.getElementById("users-table");
-      table.innerHTML = ""; // Clear previous data
-
-      data.forEach(user => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${user.email}</td>
-          <td>${user.btc_balance.toFixed(8)}</td>
-          <td>${user.total_earned.toFixed(8)}</td>
-          <td>${user.hashrate}</td>
-          <td>${user.last_mined ? new Date(user.last_mined).toLocaleString() : "N/A"}</td>
-        `;
-        table.appendChild(row);
-      });
-    })
-    .catch(err => {
-      console.error("Error loading users:", err);
-      alert("❌ Failed to load users.");
-    });
-}
-
 function showWithdrawals() {
   const section = document.getElementById("withdrawals-section");
-  section.style.display = section.style.display === "none" ? "block" : "none";
-
+  section.style.display = "block";
   fetch("https://danoski-backend.onrender.com/admin/withdrawals")
     .then(res => res.json())
     .then(data => {
       const table = document.getElementById("withdrawals-table");
       table.innerHTML = "";
-
-      data.forEach(item => {
-        const row = `
-          <tr>
-            <td>${item.email}</td>
-            <td>${item.amount}</td>
-            <td>${item.wallet}</td>
-            <td>${item.status}</td>
-            <td>${new Date(item.created_at).toLocaleString()}</td>
-          </tr>
-        `;
-        table.innerHTML += row;
-      });
-    });
-}
-
-
-let autoApprove = false;
-
-function showWithdrawals() {
-  const section = document.getElementById("withdrawals-section");
-  section.style.display = section.style.display === "none" ? "block" : "none";
-
-  fetch("https://danoski-backend.onrender.com/admin/withdrawals")
-    .then(res => res.json())
-    .then(data => {
-      const table = document.getElementById("withdrawals-table");
-      table.innerHTML = "";
-
       data.forEach(w => {
         const row = document.createElement("tr");
-
         row.innerHTML = `
           <td><input type="checkbox" class="withdraw-checkbox" value="${w.id}" ${w.status !== "pending" ? "disabled" : ""}></td>
           <td>${w.email}</td>
@@ -265,31 +182,10 @@ function showWithdrawals() {
             ` : ""}
           </td>
         `;
-
         table.appendChild(row);
-
-        // Auto-approve if toggle is on
-        if (w.status === "pending" && autoApprove) {
-          updateWithdrawal(w.id, 'approved');
-        }
+        if (w.status === "pending" && autoApprove) updateWithdrawal(w.id, 'approved');
       });
     });
-}
-
-function toggleSelectAll(source) {
-  const checkboxes = document.querySelectorAll(".withdraw-checkbox");
-  checkboxes.forEach(cb => {
-    if (!cb.disabled) cb.checked = source.checked;
-  });
-}
-
-function approveSelectedWithdrawals() {
-  const selected = Array.from(document.querySelectorAll(".withdraw-checkbox:checked"))
-    .map(cb => parseInt(cb.value));
-
-  if (selected.length === 0) return alert("No withdrawals selected.");
-
-  selected.forEach(id => updateWithdrawal(id, "approved"));
 }
 
 function approveAllWithdrawals() {
@@ -297,25 +193,15 @@ function approveAllWithdrawals() {
     .then(res => res.json())
     .then(data => {
       const pending = data.filter(w => w.status === "pending");
-      if (pending.length === 0) {
-        alert("No pending withdrawals to approve.");
-        return;
-      }
-
+      if (pending.length === 0) return alert("No pending withdrawals to approve.");
       let completed = 0;
-
-      pending.forEach(w => {
-        updateWithdrawal(w.id, "approved", () => {
-          completed++;
-          if (completed === pending.length) {
-            showWithdrawals(); // Refresh only ONCE after all updates
-          }
-        });
-      });
+      pending.forEach(w => updateWithdrawal(w.id, "approved", () => {
+        completed++;
+        if (completed === pending.length) showWithdrawals();
+      }));
     });
 }
 
-// Modified updateWithdrawal to support optional callback
 function updateWithdrawal(id, status, callback) {
   fetch("https://danoski-backend.onrender.com/admin/update-withdrawal", {
     method: "POST",
@@ -323,10 +209,19 @@ function updateWithdrawal(id, status, callback) {
     body: JSON.stringify({ id, status })
   })
     .then(res => res.json())
-    .then(data => {
-      console.log(data);
-      if (typeof callback === "function") callback(); // Call back when done
-    });
+    .then(() => typeof callback === "function" && callback());
+}
+
+function toggleSelectAll(source) {
+  document.querySelectorAll(".withdraw-checkbox").forEach(cb => {
+    if (!cb.disabled) cb.checked = source.checked;
+  });
+}
+
+function approveSelectedWithdrawals() {
+  const selected = Array.from(document.querySelectorAll(".withdraw-checkbox:checked")).map(cb => parseInt(cb.value));
+  if (selected.length === 0) return alert("No withdrawals selected.");
+  selected.forEach(id => updateWithdrawal(id, "approved"));
 }
 
 function toggleAutoApprove() {
@@ -334,59 +229,70 @@ function toggleAutoApprove() {
   showWithdrawals();
 }
 
+function showUsers() {
+  document.getElementById("users-section").style.display = "block";
+  fetch("https://danoski-backend.onrender.com/admin/users")
+    .then(res => res.json())
+    .then(data => {
+      const table = document.getElementById("users-table");
+      table.innerHTML = "";
+      data.forEach(user => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${user.email}</td>
+          <td>${user.btc_balance.toFixed(8)}</td>
+          <td>${user.total_earned.toFixed(8)}</td>
+          <td>${user.hashrate}</td>
+          <td>${user.last_mined ? new Date(user.last_mined).toLocaleString() : "N/A"}</td>
+        `;
+        table.appendChild(row);
+      });
+    })
+    .catch(() => alert("❌ Failed to load users."));
+}
+
 function postAnnouncement() {
   const title = document.getElementById("announce-title").value.trim();
   const content = document.getElementById("announce-content").value.trim();
-
   if (!title || !content) {
     document.getElementById("announce-status").innerText = "❌ Title and content required.";
     return;
   }
-
   fetch("https://danoski-backend.onrender.com/admin/add-message", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ title, content })
   })
-  .then(res => res.json())
-  .then(data => {
-    document.getElementById("announce-status").innerText = data.message || data.error;
-  });
+    .then(res => res.json())
+    .then(data => document.getElementById("announce-status").innerText = data.message || data.error);
 }
 
 function deleteAnnouncement() {
   fetch("https://danoski-backend.onrender.com/admin/delete-message", {
-    method: "DELETE"
-  })
-  .then(res => res.json())
-  .then(data => {
-    document.getElementById("announce-status").innerText = data.message || data.error;
-    document.getElementById("announce-title").value = "";
-    document.getElementById("announce-content").value = "";
-  });
-        }
+    method: "DELETE" })
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("announce-status").innerText = data.message || data.error;
+      document.getElementById("announce-title").value = "";
+      document.getElementById("announce-content").value = "";
+    });
+}
 
 function loadCurrentHashrate() {
   fetch("https://danoski-backend.onrender.com/admin/get-hashrate")
     .then(res => res.json())
-    .then(data => {
-      document.getElementById("current-hashrate").innerText = data.hashrate;
-    })
-    .catch(() => {
-      document.getElementById("current-hashrate").innerText = "Error";
-    });
+    .then(data => document.getElementById("current-hashrate").innerText = data.hashrate)
+    .catch(() => document.getElementById("current-hashrate").innerText = "Error");
 }
 
 function updateHashrate() {
   const value = document.getElementById("hashrate-value").value;
   const msg = document.getElementById("hashrate-msg");
-
   if (!value || isNaN(value) || value <= 0) {
     msg.innerText = "❌ Enter a valid hashrate.";
     msg.style.color = "red";
     return;
   }
-
   fetch("https://danoski-backend.onrender.com/admin/set-hashrate", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -396,7 +302,7 @@ function updateHashrate() {
     .then(data => {
       msg.innerText = data.message || data.error;
       msg.style.color = data.error ? "red" : "green";
-      loadCurrentHashrate(); // Refresh displayed hashrate
+      loadCurrentHashrate();
     })
     .catch(() => {
       msg.innerText = "❌ Failed to update hashrate.";
@@ -404,17 +310,8 @@ function updateHashrate() {
     });
 }
 
-// Automatically load hashrate when the page loads
-window.onload = () => {
-  loadCurrentHashrate();
-};
-
 function toggleSection(id) {
-  // Hide all sections first
-  const sections = document.querySelectorAll('.admin-container');
-  sections.forEach(sec => sec.style.display = 'none');
-
-  // Show the selected section
+  document.querySelectorAll('.admin-container').forEach(sec => sec.style.display = 'none');
   const target = document.getElementById(id);
   if (target) {
     target.style.display = 'block';
@@ -431,3 +328,18 @@ function closeSection(id) {
     document.querySelector('.admin-nav').style.display = 'block';
   }
 }
+
+// Persist login and dashboard state on reload
+window.addEventListener("DOMContentLoaded", () => {
+  const user = sessionStorage.getItem("admin");
+  const view = sessionStorage.getItem("currentView");
+  if (user && view === "dashboard") {
+    showDashboard();
+  }
+  document.getElementById("forgot-password-btn").addEventListener("click", () => {
+    document.getElementById("login-form").style.display = "none";
+    document.getElementById("forgot-password-section").style.display = "block";
+  });
+  document.getElementById("dashboard-logout-btn").addEventListener("click", logoutAdmin);
+  loadCurrentHashrate();
+});
