@@ -287,8 +287,9 @@ function updateWithdrawal(id, status) {
 }
 
 function toggleAutoApprove() {
-  autoApprove = document.getElementById("auto-approve-toggle").checked;
-  sessionStorage.setItem("autoApprove", autoApprove);
+  const isChecked = document.getElementById("auto-approve-toggle").checked;
+  autoApprove = isChecked;
+  sessionStorage.setItem("autoApprove", isChecked); // ✅ Save to session
 }
 
 function postAnnouncement() {
