@@ -352,12 +352,24 @@ function deleteAnnouncement() {
   });
         }
 
+function loadCurrentHashrate() {
+  fetch("https://danoski-backend.onrender.com/admin/get-hashrate")
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("current-hashrate").innerText = data.hashrate;
+    })
+    .catch(() => {
+      document.getElementById("current-hashrate").innerText = "Error";
+    });
+}
+
 function updateHashrate() {
   const value = document.getElementById("hashrate-value").value;
   const msg = document.getElementById("hashrate-msg");
 
   if (!value || isNaN(value) || value <= 0) {
     msg.innerText = "❌ Enter a valid hashrate.";
+    msg.style.color = "red";
     return;
   }
 
@@ -369,8 +381,16 @@ function updateHashrate() {
     .then(res => res.json())
     .then(data => {
       msg.innerText = data.message || data.error;
+      msg.style.color = data.error ? "red" : "green";
+      loadCurrentHashrate(); // Refresh displayed hashrate
     })
     .catch(() => {
       msg.innerText = "❌ Failed to update hashrate.";
+      msg.style.color = "red";
     });
 }
+
+// Automatically load hashrate when the page loads
+window.onload = () => {
+  loadCurrentHashrate();
+};
