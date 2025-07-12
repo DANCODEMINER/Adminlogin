@@ -451,26 +451,30 @@ function toggleSection(id) {
 
 document.addEventListener("DOMContentLoaded", () => {
   const adminUsername = sessionStorage.getItem("admin");
-
   const loginSection = document.getElementById("login-section");
   const dashboardSection = document.getElementById("dashboard-section");
 
   if (adminUsername) {
-    // Admin is logged in
+    // Show dashboard and hide login
     loginSection.style.display = "none";
     dashboardSection.style.display = "block";
+
+    // Reset all sections to default view
+    document.querySelector('#dashboard-section > h2').style.display = 'block';
+    document.querySelector('.admin-nav').style.display = 'grid';
+
+    const sections = document.querySelectorAll('.admin-container');
+    sections.forEach(section => {
+      section.style.display = 'none';
+    });
   } else {
-    // Not logged in
+    // Show login and hide dashboard
     loginSection.style.display = "block";
     dashboardSection.style.display = "none";
   }
 });
 
-function closeSection(id) {
-  const section = document.getElementById(id);
-  if (section) {
-    section.style.display = 'none';
-    document.querySelector('#dashboard-section > h2').style.display = 'block';
-    document.querySelector('.admin-nav').style.display = 'block';
-  }
+function logoutAdmin() {
+  sessionStorage.removeItem("admin");
+  location.reload(); // Simple and effective way to reset view
 }
