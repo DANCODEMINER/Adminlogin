@@ -454,29 +454,3 @@ function closeSection(id) {
 }
 
 // STEP 1: Auto-load dashboard if session exists
-window.addEventListener("DOMContentLoaded", () => {
-  const adminUsername = sessionStorage.getItem("admin");
-
-  if (adminUsername) {
-    const dashboard = document.getElementById("dashboard-section");
-    const loginSection = document.getElementById("login-section");
-
-    if (dashboard && loginSection) {
-      loginSection.style.display = "none";
-      dashboard.style.display = "block";
-
-      loadCurrentHashrate();
-      showUsers();
-      showWithdrawals();
-    }
-  } else {
-    // If not logged in, make sure login form is visible
-    const loginSection = document.getElementById("login-section");
-    const dashboard = document.getElementById("dashboard-section");
-
-    if (loginSection && dashboard) {
-      loginSection.style.display = "block";
-      dashboard.style.display = "none";
-    }
-  }
-});
