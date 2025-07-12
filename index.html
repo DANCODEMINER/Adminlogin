@@ -52,104 +52,89 @@
       </div>
     </div>
 
-    <!-- Dashboard Section (hidden initially) -->
-    <div id="dashboard-section" style="display:none; margin-top: 2rem; text-align:center;">
-      <h2>Welcome to Admin Dashboard</h2>
-      <button onclick="showUsers()">👥 View All Users</button>
+    <!-- Admin Dashboard -->
+<div id="dashboard-section" style="display: none; text-align: center; padding: 20px;">
 
-      <div id="users-section" style="display: none; margin-top: 20px;">
-  <h2>Registered Users</h2>
-  <table border="1">
-    <thead>
-      <tr>
-        <th>Email</th>
-        <th>BTC Balance</th>
-        <th>Total Earned</th>
-        <th>Hashrate</th>
-        <th>Last Mined</th>
-      </tr>
-    </thead>
-    <tbody id="users-table">
-      <!-- Fetched user rows will go here -->
-    </tbody>
-  </table>
-      </div>
+  <h2>Welcome to Admin Dashboard</h2>
 
-      <button onclick="showWithdrawals()">💸 View Withdrawals</button>
-
-<div id="withdrawals-section" style="display: none; margin-top: 20px;">
-  <h2>User Withdrawals</h2>
-  <table border="1">
-    <thead>
-      <tr>
-        <th>Email</th>
-        <th>Amount</th>
-        <th>Wallet</th>
-        <th>Status</th>
-        <th>Date</th>
-      </tr>
-    </thead>
-    <tbody id="withdrawals-table">
-      <!-- Withdrawals will be loaded here -->
-    </tbody>
-  </table>
-</div>
-
-      <h2>📢 Global Announcement</h2>
-
-<div>
-  <input type="text" id="announce-title" placeholder="Announcement Title" />
-  <br /><br />
-  <textarea id="announce-content" placeholder="Write your announcement here..." rows="4" cols="50"></textarea>
-  <br /><br />
-  <button onclick="postAnnouncement()">📬 Post Announcement</button>
-  <button onclick="deleteAnnouncement()">🗑️ Delete Announcement</button>
-  <p id="announce-status"></p>
-</div>
-
-      <button onclick="showWithdrawals()">💸 View Withdrawals</button>
-
-<div id="withdrawals-section" style="display: none; margin-top: 20px;">
-  <h2>Withdrawal Requests</h2>
-
-  <div style="margin-bottom: 10px;">
-    <button onclick="approveSelectedWithdrawals()">✅ Approve Selected</button>
-    <button onclick="approveAllWithdrawals()">✅ Approve All</button>
-    <label style="margin-left: 10px;">
-      <input type="checkbox" id="auto-approve-toggle" onchange="toggleAutoApprove()"> Auto-Approve New
-    </label>
+  <!-- Navigation Buttons -->
+  <div style="margin-bottom: 20px;">
+    <button onclick="toggleSection('users-section')">👥 View Users</button>
+    <button onclick="toggleSection('withdrawals-section')">💸 View Withdrawals</button>
+    <button onclick="toggleSection('announcement-section')">📢 Announcements</button>
+    <button onclick="toggleSection('hashrate-section')">⚙️ Hashrate Settings</button>
   </div>
 
-  <table border="1">
-    <thead>
-      <tr>
-        <th><input type="checkbox" id="select-all" onchange="toggleSelectAll(this)"></th>
-        <th>Email</th>
-        <th>Amount</th>
-        <th>Wallet</th>
-        <th>Status</th>
-        <th>Date</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody id="withdrawals-table">
-      <!-- Fetched rows -->
-    </tbody>
-  </table>
-</div>
+  <!-- Users Section -->
+  <div id="users-section" class="admin-container" style="display: none;">
+    <h3>Registered Users</h3>
+    <table border="1" width="100%">
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>BTC Balance</th>
+          <th>Total Earned</th>
+          <th>Hashrate</th>
+          <th>Last Mined</th>
+        </tr>
+      </thead>
+      <tbody id="users-table"></tbody>
+    </table>
+    <button onclick="closeSection('users-section')">🔙 Back</button>
+  </div>
 
-      <h2>Set Hashrate Per Ad</h2>
+  <!-- Withdrawals Section -->
+  <div id="withdrawals-section" class="admin-container" style="display: none;">
+    <h3>Withdrawal Requests</h3>
 
-<p>Current Hashrate: <span id="current-hashrate">Loading...</span> H/s</p>
-
-<input type="number" id="hashrate-value" placeholder="Enter hashrate value" />
-<button onclick="updateHashrate()">Update</button>
-<p id="hashrate-msg" style="color: green;"></p>
-      
-      <button id="dashboard-logout-btn">Logout</button>
+    <div style="margin-bottom: 10px;">
+      <button onclick="approveSelectedWithdrawals()">✅ Approve Selected</button>
+      <button onclick="approveAllWithdrawals()">✅ Approve All</button>
+      <label>
+        <input type="checkbox" id="auto-approve-toggle" onchange="toggleAutoApprove()"> Auto-Approve New
+      </label>
     </div>
+
+    <table border="1" width="100%">
+      <thead>
+        <tr>
+          <th><input type="checkbox" id="select-all" onchange="toggleSelectAll(this)"></th>
+          <th>Email</th>
+          <th>Amount</th>
+          <th>Wallet</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="withdrawals-table"></tbody>
+    </table>
+    <button onclick="closeSection('withdrawals-section')">🔙 Back</button>
   </div>
 
-  <script src="Login.js"></script>
-</body>
-</html>
+  <!-- Announcement Section -->
+  <div id="announcement-section" class="admin-container" style="display: none;">
+    <h3>Post Global Announcement</h3>
+    <input type="text" id="announce-title" placeholder="Title" />
+    <br /><br />
+    <textarea id="announce-content" rows="4" cols="50" placeholder="Announcement..."></textarea>
+    <br /><br />
+    <button onclick="postAnnouncement()">📬 Post</button>
+    <button onclick="deleteAnnouncement()">🗑️ Delete</button>
+    <p id="announce-status"></p>
+    <button onclick="closeSection('announcement-section')">🔙 Back</button>
+  </div>
+
+  <!-- Hashrate Section -->
+  <div id="hashrate-section" class="admin-container" style="display: none;">
+    <h3>Set Hashrate Per Ad</h3>
+    <p>Current Hashrate: <span id="current-hashrate">Loading...</span> H/s</p>
+    <input type="number" id="hashrate-value" placeholder="Enter new value" />
+    <button onclick="updateHashrate()">Update</button>
+    <p id="hashrate-msg" style="color: green;"></p>
+    <button onclick="closeSection('hashrate-section')">🔙 Back</button>
+  </div>
+
+  <br />
+  <button id="dashboard-logout-btn">🚪 Logout</button>
+</div>
