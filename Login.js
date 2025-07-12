@@ -351,3 +351,26 @@ function deleteAnnouncement() {
     document.getElementById("announce-content").value = "";
   });
         }
+
+function updateHashrate() {
+  const value = document.getElementById("hashrate-value").value;
+  const msg = document.getElementById("hashrate-msg");
+
+  if (!value || isNaN(value) || value <= 0) {
+    msg.innerText = "❌ Enter a valid hashrate.";
+    return;
+  }
+
+  fetch("https://danoski-backend.onrender.com/admin/set-hashrate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ value: parseInt(value) })
+  })
+    .then(res => res.json())
+    .then(data => {
+      msg.innerText = data.message || data.error;
+    })
+    .catch(() => {
+      msg.innerText = "❌ Failed to update hashrate.";
+    });
+}
