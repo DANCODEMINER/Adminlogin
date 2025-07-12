@@ -117,11 +117,22 @@
 <!-- ANNOUNCEMENT SECTION -->
 <div id="announcement-section" class="admin-container" style="display: none;">
   <h3>📢 Global Announcement</h3>
+
+  <!-- Input for new announcement -->
   <input type="text" id="announce-title" placeholder="Title" style="width:100%;" /><br><br>
   <textarea id="announce-content" rows="5" placeholder="Type your announcement here..." style="width:100%;"></textarea><br><br>
   <button onclick="postAnnouncement()">📬 Post</button>
   <button onclick="deleteAnnouncement()">🗑️ Delete</button>
   <p id="announce-status"></p>
+
+  <!-- Display of currently active announcement -->
+  <div style="margin-top: 30px; padding: 15px; border: 1px solid #ccc; border-radius: 8px;">
+    <h4>📌 Current Announcement:</h4>
+    <p><strong id="current-title">No title</strong></p>
+    <p id="current-content">No announcement found.</p>
+  </div>
+
+  <br>
   <button onclick="closeSection('announcement-section')">🔙 Back to Dashboard</button>
 </div>
 
