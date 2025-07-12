@@ -427,12 +427,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadMessages?.();
 
-  // ✅ Restore auto-approve from session
-  const saved = sessionStorage.getItem("autoApprove") === "true";
-  autoApprove = saved;
+  // ✅ Delay restore to ensure checkbox exists
+  setTimeout(() => {
+    const saved = sessionStorage.getItem("autoApprove") === "true";
+    autoApprove = saved;
 
-  const autoToggle = document.getElementById("auto-approve-toggle");
-  if (autoToggle) autoToggle.checked = saved;
+    const autoToggle = document.getElementById("auto-approve-toggle");
+    if (autoToggle) autoToggle.checked = saved;
+
+    console.log("Restored autoApprove:", saved);
+  }, 0);
 
   // ✅ Auto-approve loop
   setInterval(() => {
