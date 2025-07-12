@@ -95,14 +95,16 @@
   </table>
 </div>
 
-      <button onclick="toggleMessageForm()">📢 Post Announcement</button>
+      <h2>📢 Global Announcement</h2>
 
-<div id="message-form-section" style="display: none; margin-top: 20px;">
-  <h2>New Message</h2>
-  <input type="text" id="msg-title" placeholder="Message Title" style="width: 300px;" /><br/><br/>
-  <textarea id="msg-content" placeholder="Message Content" rows="4" style="width: 300px;"></textarea><br/><br/>
-  <button onclick="postMessage()">✅ Send Message</button>
-  <p id="message-status"></p>
+<div>
+  <input type="text" id="announce-title" placeholder="Announcement Title" />
+  <br /><br />
+  <textarea id="announce-content" placeholder="Write your announcement here..." rows="4" cols="50"></textarea>
+  <br /><br />
+  <button onclick="postAnnouncement()">📬 Post Announcement</button>
+  <button onclick="deleteAnnouncement()">🗑️ Delete Announcement</button>
+  <p id="announce-status"></p>
 </div>
 
       <button onclick="showWithdrawals()">💸 View Withdrawals</button>
