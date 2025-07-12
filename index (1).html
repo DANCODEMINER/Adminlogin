@@ -54,21 +54,25 @@
 
 
 <!-- ADMIN DASHBOARD SECTION -->
-<div id="dashboard-section">
+<!-- Admin Dashboard -->
+<div id="dashboard-section" style="display: none; text-align: center; padding: 20px;">
+
   <h2 style="text-align:center;">Admin Dashboard</h2>
+
   <div class="admin-nav">
     <div class="admin-button" onclick="toggleSection('users-section')">👥 View Users</div>
     <div class="admin-button" onclick="toggleSection('withdrawals-section')">💸 Withdrawal Requests</div>
     <div class="admin-button" onclick="toggleSection('announcement-section')">📢 Post Announcement</div>
     <div class="admin-button" onclick="toggleSection('hashrate-section')">⚙️ Set Hashrate</div>
   </div>
+
   <div style="text-align:center;">
     <button onclick="logoutAdmin()">🚪 Logout</button>
   </div>
 </div>
 
 <!-- USERS SECTION -->
-<div id="users-section" class="admin-container">
+<div id="users-section" class="admin-container" style="display: none;">
   <h3>👥 Registered Users</h3>
   <table>
     <thead>
@@ -86,7 +90,7 @@
 </div>
 
 <!-- WITHDRAWALS SECTION -->
-<div id="withdrawals-section" class="admin-container">
+<div id="withdrawals-section" class="admin-container" style="display: none;">
   <h3>💸 Withdrawal Requests</h3>
   <div>
     <button onclick="approveSelectedWithdrawals()">✅ Approve Selected</button>
@@ -111,7 +115,7 @@
 </div>
 
 <!-- ANNOUNCEMENT SECTION -->
-<div id="announcement-section" class="admin-container">
+<div id="announcement-section" class="admin-container" style="display: none;">
   <h3>📢 Global Announcement</h3>
   <input type="text" id="announce-title" placeholder="Title" style="width:100%;" /><br><br>
   <textarea id="announce-content" rows="5" placeholder="Type your announcement here..." style="width:100%;"></textarea><br><br>
@@ -122,7 +126,7 @@
 </div>
 
 <!-- HASHRATE SECTION -->
-<div id="hashrate-section" class="admin-container">
+<div id="hashrate-section" class="admin-container" style="display: none;">
   <h3>⚙️ Set Hashrate Per Ad</h3>
   <p>Current Hashrate: <span id="current-hashrate">Loading...</span> H/s</p>
   <input type="number" id="hashrate-value" placeholder="Enter new hashrate" />
@@ -167,6 +171,6 @@
   }
 </style>
 
-    <script src="Login.js"></script>
+<script src="Login.js"></script>
 </body>
 </html>
