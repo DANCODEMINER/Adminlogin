@@ -474,7 +474,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-function logoutAdmin() {
-  sessionStorage.removeItem("admin");
-  location.reload(); // Simple and effective way to reset view
+function closeSection(id) {
+  const section = document.getElementById(id);
+  if (section) {
+    section.style.display = 'none';
+    document.querySelector('#dashboard-section > h2').style.display = 'block';
+    document.querySelector('.admin-nav').style.display = 'block';
+  }
 }
