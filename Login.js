@@ -214,7 +214,7 @@ function showWithdrawals() {
   const section = document.getElementById("withdrawals-section");
   section.style.display = section.style.display === "none" ? "block" : "none";
 
-  fetch("https://danoski-backend.onrender.com/admin/withdrawals")
+  fetch("https://danoski-backend.onrender.com/admin/withdrawal-requests")
     .then(res => res.json())
     .then(data => {
       const table = document.getElementById("withdrawals-table");
@@ -232,6 +232,10 @@ function showWithdrawals() {
         `;
         table.innerHTML += row;
       });
+    })
+    .catch(error => {
+      console.error("Error fetching withdrawals:", error);
+      alert("❌ Failed to load withdrawals.");
     });
 }
 
@@ -242,7 +246,7 @@ function showWithdrawals() {
   const section = document.getElementById("withdrawals-section");
   section.style.display = section.style.display === "none" ? "block" : "none";
 
-  fetch("https://danoski-backend.onrender.com/admin/withdrawals")
+  fetch("https://danoski-backend.onrender.com/admin/withdrawal-requests")
     .then(res => res.json())
     .then(data => {
       const table = document.getElementById("withdrawals-table");
@@ -268,11 +272,15 @@ function showWithdrawals() {
 
         table.appendChild(row);
 
-        // Auto-approve if toggle is on
+        // Auto-approve if enabled
         if (w.status === "pending" && autoApprove) {
           updateWithdrawal(w.id, 'approved');
         }
       });
+    })
+    .catch(err => {
+      console.error("Error loading withdrawals:", err);
+      alert("❌ Failed to load withdrawals.");
     });
 }
 
