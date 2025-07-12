@@ -404,31 +404,29 @@ function updateHashrate() {
       msg.style.color = "red";
     });
 }
-
-function loadCurrentAnnouncement() {
-  fetch("https://danoski-backend.onrender.com/user/messages")
-    .then(response => {
-      if (!response.ok) {
-        throw new Error("Failed to fetch announcement");
-      }
-      return response.json();
-    })
-    .then(data => {
-      // Fill in the announcement details
-      document.getElementById("current-title").innerText = data.title || "No title";
-      document.getElementById("current-content").innerText = data.content || "No announcement available.";
-    })
-    .catch(error => {
-      console.error("Error loading announcement:", error);
-      document.getElementById("current-title").innerText = "Error";
-      document.getElementById("current-content").innerText = "Could not load announcement.";
-    });
-}
-
 // Automatically load hashrate when the page loads
 window.onload = () => {
   loadCurrentHashrate();
 };
+
+function loadCurrentAnnouncement() {
+  fetch("https://danoski-backend.onrender.com/user/messages")
+    .then(res => res.json())
+    .then(data => {
+      if (data.title && data.content) {
+        document.getElementById("current-title").innerText = data.title;
+        document.getElementById("current-content").innerText = data.content;
+      } else {
+        document.getElementById("current-title").innerText = "No title";
+        document.getElementById("current-content").innerText = "No announcement found.";
+      }
+    })
+    .catch(err => {
+      console.error("Error loading announcement:", err);
+      document.getElementById("current-title").innerText = "Error";
+      document.getElementById("current-content").innerText = "Unable to fetch announcement.";
+    });
+}
 
 function toggleSection(id) {
   // Hide all sections first
