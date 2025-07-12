@@ -296,13 +296,27 @@ function approveAllWithdrawals() {
   fetch("https://danoski-backend.onrender.com/admin/withdrawals")
     .then(res => res.json())
     .then(data => {
-      data.filter(w => w.status === "pending").forEach(w => {
-        updateWithdrawal(w.id, "approved");
+      const pending = data.filter(w => w.status === "pending");
+      if (pending.length === 0) {
+        alert("No pending withdrawals to approve.");
+        return;
+      }
+
+      let completed = 0;
+
+      pending.forEach(w => {
+        updateWithdrawal(w.id, "approved", () => {
+          completed++;
+          if (completed === pending.length) {
+            showWithdrawals(); // Refresh only ONCE after all updates
+          }
+        });
       });
     });
 }
 
-function updateWithdrawal(id, status) {
+// Modified updateWithdrawal to support optional callback
+function updateWithdrawal(id, status, callback) {
   fetch("https://danoski-backend.onrender.com/admin/update-withdrawal", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -311,7 +325,7 @@ function updateWithdrawal(id, status) {
     .then(res => res.json())
     .then(data => {
       console.log(data);
-      showWithdrawals(); // Refresh
+      if (typeof callback === "function") callback(); // Call back when done
     });
 }
 
