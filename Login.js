@@ -408,8 +408,6 @@ function toggleSection(id) {
   }
 }
 
-let autoApprove = false;
-
 document.addEventListener("DOMContentLoaded", () => {
   const admin = sessionStorage.getItem("admin");
   if (admin) showDashboard();
