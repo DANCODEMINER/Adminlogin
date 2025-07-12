@@ -405,6 +405,26 @@ function updateHashrate() {
     });
 }
 
+function loadCurrentAnnouncement() {
+  fetch("https://danoski-backend.onrender.com/user/messages")
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Failed to fetch announcement");
+      }
+      return response.json();
+    })
+    .then(data => {
+      // Fill in the announcement details
+      document.getElementById("current-title").innerText = data.title || "No title";
+      document.getElementById("current-content").innerText = data.content || "No announcement available.";
+    })
+    .catch(error => {
+      console.error("Error loading announcement:", error);
+      document.getElementById("current-title").innerText = "Error";
+      document.getElementById("current-content").innerText = "Could not load announcement.";
+    });
+}
+
 // Automatically load hashrate when the page loads
 window.onload = () => {
   loadCurrentHashrate();
