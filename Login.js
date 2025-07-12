@@ -1,10 +1,10 @@
 // Login Admin
 function loginAdmin() {
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
+  const username = document.getElementById("admin-login-username").value.trim();
+  const password = document.getElementById("admin-login-password").value.trim();
 
   if (!username || !password) {
-    alert("Please fill in all fields");
+    document.getElementById("login-message").innerText = "❌ Enter both username and password.";
     return;
   }
 
@@ -15,20 +15,16 @@ function loginAdmin() {
   })
     .then(res => res.json())
     .then(data => {
-      if (data.success) {
-        // ✅ Store session flag in sessionStorage
-        sessionStorage.setItem("adminLoggedIn", "true");
-
-        // ✅ Show dashboard
-        document.getElementById("login-section").style.display = "none";
-        document.getElementById("dashboard-section").style.display = "block";
+      if (data.error) {
+        document.getElementById("login-message").innerText = "❌ " + data.error;
       } else {
-        alert("❌ Invalid credentials");
+        document.getElementById("login-message").innerText = "✅ Login successful!";
+        showDashboard();
+        sessionStorage.setItem("admin", username);
       }
     })
-    .catch(err => {
-      console.error("Login failed:", err);
-      alert("❌ Login request failed");
+    .catch(() => {
+      document.getElementById("login-message").innerText = "❌ Failed to log in.";
     });
 }
 
