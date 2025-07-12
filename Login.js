@@ -420,6 +420,15 @@ function toggleSection(id) {
   }
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+  const admin = sessionStorage.getItem("admin");
+
+  if (admin) {
+    showDashboard();
+    showWithdrawals();
+  }
+});
+
 function closeSection(id) {
   const section = document.getElementById(id);
   if (section) {
