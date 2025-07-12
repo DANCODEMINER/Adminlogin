@@ -455,15 +455,25 @@ function closeSection(id) {
 
 // STEP 1: Auto-load dashboard if session exists
 window.addEventListener("DOMContentLoaded", () => {
-  const adminUsername = sessionStorage.getItem("admin");
+  setTimeout(() => {
+    const adminUsername = sessionStorage.getItem("admin");
+    console.log("Admin in session:", adminUsername);
 
-  if (adminUsername) {
-    document.getElementById("login-section").style.display = "none";
-    document.getElementById("dashboard-section").style.display = "block";
+    if (adminUsername) {
+      const dashboard = document.getElementById("dashboard-section");
+      const loginForm = document.getElementById("login-section");
 
-    // Optional: Load dashboard data if needed
-    loadCurrentHashrate();
-    showUsers();
-    showWithdrawals();
-  }
+      if (dashboard && loginForm) {
+        loginForm.style.display = "none";
+        dashboard.style.display = "block";
+
+        // Optional: load data right away
+        loadCurrentHashrate();
+        showUsers();
+        showWithdrawals();
+      } else {
+        console.warn("Login or dashboard section not found.");
+      }
+    }
+  }, 100); // slight delay to ensure DOM is ready
 });
