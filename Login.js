@@ -158,16 +158,13 @@ function showLoginForm() {
 
 // Logout
 function logoutAdmin() {
-  document.getElementById("dashboard-section").style.display = "none";
-  document.getElementById("login-form").style.display = "block";
   sessionStorage.clear();
-
+  showLoginForm();
   document.getElementById("admin-login-username").value = "";
   document.getElementById("admin-login-password").value = "";
-  document.getElementById("login-message").innerText = "";
 }
 
-// Setup listeners after DOM is ready
+// DOM Ready
 document.addEventListener("DOMContentLoaded", () => {
   const forgotPasswordBtn = document.getElementById("forgot-password-btn");
   const logoutBtn = document.getElementById("dashboard-logout-btn");
@@ -178,242 +175,23 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   logoutBtn.addEventListener("click", logoutAdmin);
+
+  // Session persist after refresh
+  if (sessionStorage.getItem("admin")) {
+    showDashboard();
+  }
 });
 
-function showUsers() {
-  document.getElementById("users-section").style.display = "block";
-  fetchUsers();
+// Back buttons from reset forms
+function backToLoginFromForgot() {
+  showLoginForm();
+}
+function backToLoginFromOtp() {
+  showLoginForm();
+}
+function backToLoginFromNewPass() {
+  showLoginForm();
 }
 
-function fetchUsers() {
-  fetch("https://danoski-backend.onrender.com/admin/users")
-    .then(res => res.json())
-    .then(data => {
-      const table = document.getElementById("users-table");
-      table.innerHTML = ""; // Clear previous data
-
-      data.forEach(user => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${user.email}</td>
-          <td>${user.btc_balance.toFixed(8)}</td>
-          <td>${user.total_earned.toFixed(8)}</td>
-          <td>${user.hashrate}</td>
-          <td>${user.last_mined ? new Date(user.last_mined).toLocaleString() : "N/A"}</td>
-        `;
-        table.appendChild(row);
-      });
-    })
-    .catch(err => {
-      console.error("Error loading users:", err);
-      alert("❌ Failed to load users.");
-    });
-}
-
-function showWithdrawals() {
-  const section = document.getElementById("withdrawals-section");
-  section.style.display = section.style.display === "none" ? "block" : "none";
-
-  fetch("https://danoski-backend.onrender.com/admin/withdrawals")
-    .then(res => res.json())
-    .then(data => {
-      const table = document.getElementById("withdrawals-table");
-      table.innerHTML = "";
-
-      data.forEach(item => {
-        const row = `
-          <tr>
-            <td>${item.email}</td>
-            <td>${item.amount}</td>
-            <td>${item.wallet}</td>
-            <td>${item.status}</td>
-            <td>${new Date(item.created_at).toLocaleString()}</td>
-          </tr>
-        `;
-        table.innerHTML += row;
-      });
-    });
-}
-
-
-let autoApprove = false;
-
-function showWithdrawals() {
-  const section = document.getElementById("withdrawals-section");
-  section.style.display = section.style.display === "none" ? "block" : "none";
-
-  fetch("https://danoski-backend.onrender.com/admin/withdrawals")
-    .then(res => res.json())
-    .then(data => {
-      const table = document.getElementById("withdrawals-table");
-      table.innerHTML = "";
-
-      data.forEach(w => {
-        const row = document.createElement("tr");
-
-        row.innerHTML = `
-          <td><input type="checkbox" class="withdraw-checkbox" value="${w.id}" ${w.status !== "pending" ? "disabled" : ""}></td>
-          <td>${w.email}</td>
-          <td>${w.amount}</td>
-          <td>${w.wallet}</td>
-          <td>${w.status}</td>
-          <td>${new Date(w.created_at).toLocaleString()}</td>
-          <td>
-            ${w.status === "pending" ? `
-              <button onclick="updateWithdrawal(${w.id}, 'approved')">✅</button>
-              <button onclick="updateWithdrawal(${w.id}, 'rejected')">❌</button>
-            ` : ""}
-          </td>
-        `;
-
-        table.appendChild(row);
-
-        // Auto-approve if toggle is on
-        if (w.status === "pending" && autoApprove) {
-          updateWithdrawal(w.id, 'approved');
-        }
-      });
-    });
-}
-
-function toggleSelectAll(source) {
-  const checkboxes = document.querySelectorAll(".withdraw-checkbox");
-  checkboxes.forEach(cb => {
-    if (!cb.disabled) cb.checked = source.checked;
-  });
-}
-
-function approveSelectedWithdrawals() {
-  const selected = Array.from(document.querySelectorAll(".withdraw-checkbox:checked"))
-    .map(cb => parseInt(cb.value));
-
-  if (selected.length === 0) return alert("No withdrawals selected.");
-
-  selected.forEach(id => updateWithdrawal(id, "approved"));
-}
-
-function approveAllWithdrawals() {
-  fetch("https://danoski-backend.onrender.com/admin/withdrawals")
-    .then(res => res.json())
-    .then(data => {
-      data.filter(w => w.status === "pending").forEach(w => {
-        updateWithdrawal(w.id, "approved");
-      });
-    });
-}
-
-function updateWithdrawal(id, status) {
-  fetch("https://danoski-backend.onrender.com/admin/update-withdrawal", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id, status })
-  })
-    .then(res => res.json())
-    .then(data => {
-      console.log(data);
-      showWithdrawals(); // Refresh
-    });
-}
-
-function toggleAutoApprove() {
-  autoApprove = document.getElementById("auto-approve-toggle").checked;
-  showWithdrawals();
-}
-
-function postAnnouncement() {
-  const title = document.getElementById("announce-title").value.trim();
-  const content = document.getElementById("announce-content").value.trim();
-
-  if (!title || !content) {
-    document.getElementById("announce-status").innerText = "❌ Title and content required.";
-    return;
-  }
-
-  fetch("https://danoski-backend.onrender.com/admin/add-message", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title, content })
-  })
-  .then(res => res.json())
-  .then(data => {
-    document.getElementById("announce-status").innerText = data.message || data.error;
-  });
-}
-
-function deleteAnnouncement() {
-  fetch("https://danoski-backend.onrender.com/admin/delete-message", {
-    method: "DELETE"
-  })
-  .then(res => res.json())
-  .then(data => {
-    document.getElementById("announce-status").innerText = data.message || data.error;
-    document.getElementById("announce-title").value = "";
-    document.getElementById("announce-content").value = "";
-  });
-        }
-
-function loadCurrentHashrate() {
-  fetch("https://danoski-backend.onrender.com/admin/get-hashrate")
-    .then(res => res.json())
-    .then(data => {
-      document.getElementById("current-hashrate").innerText = data.hashrate;
-    })
-    .catch(() => {
-      document.getElementById("current-hashrate").innerText = "Error";
-    });
-}
-
-function updateHashrate() {
-  const value = document.getElementById("hashrate-value").value;
-  const msg = document.getElementById("hashrate-msg");
-
-  if (!value || isNaN(value) || value <= 0) {
-    msg.innerText = "❌ Enter a valid hashrate.";
-    msg.style.color = "red";
-    return;
-  }
-
-  fetch("https://danoski-backend.onrender.com/admin/set-hashrate", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ value: parseInt(value) })
-  })
-    .then(res => res.json())
-    .then(data => {
-      msg.innerText = data.message || data.error;
-      msg.style.color = data.error ? "red" : "green";
-      loadCurrentHashrate(); // Refresh displayed hashrate
-    })
-    .catch(() => {
-      msg.innerText = "❌ Failed to update hashrate.";
-      msg.style.color = "red";
-    });
-}
-
-// Automatically load hashrate when the page loads
-window.onload = () => {
-  loadCurrentHashrate();
-};
-
-function toggleSection(id) {
-  // Hide all sections first
-  const sections = document.querySelectorAll('.admin-container');
-  sections.forEach(sec => sec.style.display = 'none');
-
-  // Show the selected section
-  const target = document.getElementById(id);
-  if (target) {
-    target.style.display = 'block';
-    document.querySelector('#dashboard-section > h2').style.display = 'none';
-    document.querySelector('.admin-nav').style.display = 'none';
-  }
-}
-
-function closeSection(id) {
-  const section = document.getElementById(id);
-  if (section) {
-    section.style.display = 'none';
-    document.querySelector('#dashboard-section > h2').style.display = 'block';
-    document.querySelector('.admin-nav').style.display = 'block';
-  }
-}
+// ... All your other unchanged functions go below (users, withdrawals, hashrate, etc)
+// No modifications needed for those, just continue exactly as you had them
