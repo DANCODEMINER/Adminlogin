@@ -19,8 +19,13 @@ function loginAdmin() {
         document.getElementById("login-message").innerText = "❌ " + data.error;
       } else {
         document.getElementById("login-message").innerText = "✅ Login successful!";
-        showDashboard();
+        
+        // Set session storage to persist login
         sessionStorage.setItem("admin", username);
+        sessionStorage.setItem("adminLoggedIn", "true");
+
+        // Show dashboard
+        showDashboard();
       }
     })
     .catch(() => {
