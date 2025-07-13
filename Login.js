@@ -263,12 +263,22 @@ function approveSelectedWithdrawals() {
 }
 
 function approveAllWithdrawals() {
-  fetch("https://danoski-backend.onrender.com/admin/withdrawals")
+  fetch("https://danoski-backend.onrender.com/admin/withdrawal-requests")
     .then(res => res.json())
     .then(data => {
-      data.filter(w => w.status === "pending").forEach(w => {
+      const pendingWithdrawals = data.filter(w => w.status === "pending");
+      if (pendingWithdrawals.length === 0) {
+        alert("✅ No pending withdrawals to approve.");
+        return;
+      }
+
+      pendingWithdrawals.forEach(w => {
         updateWithdrawal(w.id, "approved");
       });
+    })
+    .catch(err => {
+      console.error("Error approving all withdrawals:", err);
+      alert("❌ Failed to approve all withdrawals.");
     });
 }
 
