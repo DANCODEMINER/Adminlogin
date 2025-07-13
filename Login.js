@@ -206,50 +206,42 @@ let autoApprove = false;
 
 function showWithdrawals() {
   const section = document.getElementById("withdrawals-section");
-  section.style.display = "block"; // show section
+  section.style.display = "block"; // Always show this section when called
 
   fetch("https://danoski-backend.onrender.com/admin/withdrawal-requests")
-    .then(res => {
-      console.log("STATUS:", res.status);
-      return res.text(); // get raw response for debug
-    })
-    .then(text => {
-      console.log("RAW BODY:", text);
-      try {
-        const data = JSON.parse(text); // parse manually
-        console.log("Parsed:", data);
+    .then(res => res.json())
+    .then(data => {
+      const table = document.getElementById("withdrawals-table");
+      table.innerHTML = "";
 
-        const table = document.getElementById("withdrawals-table");
-        table.innerHTML = "";
+      data.forEach(w => {
+        const row = document.createElement("tr");
 
-        data.forEach(w => {
-          const row = document.createElement("tr");
+        row.innerHTML = `
+          <td><input type="checkbox" class="withdraw-checkbox" value="${w.id}" ${w.status !== "pending" ? "disabled" : ""}></td>
+          <td>${w.email}</td>
+          <td>${w.amount}</td>
+          <td>${w.wallet}</td>
+          <td>${w.status}</td>
+          <td>${new Date(w.created_at).toLocaleString()}</td>
+          <td>
+            ${w.status === "pending" ? `
+              <button onclick="updateWithdrawal(${w.id}, 'approved')">✅</button>
+              <button onclick="updateWithdrawal(${w.id}, 'rejected')">❌</button>
+            ` : ""}
+          </td>
+        `;
 
-          row.innerHTML = `
-            <td><input type="checkbox" class="withdraw-checkbox" value="${w.id}" ${w.status !== "pending" ? "disabled" : ""}></td>
-            <td>${w.email}</td>
-            <td>${w.amount}</td>
-            <td>${w.wallet}</td>
-            <td>${w.status}</td>
-            <td>${new Date(w.created_at).toLocaleString()}</td>
-            <td>
-              ${w.status === "pending" ? `
-                <button onclick="updateWithdrawal(${w.id}, 'approved')">✅</button>
-                <button onclick="updateWithdrawal(${w.id}, 'rejected')">❌</button>
-              ` : ""}
-            </td>
-          `;
+        table.appendChild(row);
 
-          table.appendChild(row);
-        });
-
-      } catch (err) {
-        console.error("❌ JSON parse error:", err);
-        alert("❌ Withdrawal data format invalid.");
-      }
+        // Auto-approve logic
+        if (w.status === "pending" && autoApprove) {
+          updateWithdrawal(w.id, 'approved');
+        }
+      });
     })
     .catch(err => {
-      console.error("❌ Network error:", err);
+      console.error("Error loading withdrawals:", err);
       alert("❌ Failed to load withdrawals.");
     });
 }
