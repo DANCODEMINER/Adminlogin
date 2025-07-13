@@ -412,7 +412,11 @@ function toggleSection(id) {
     document.querySelector('.admin-nav').style.display = 'none';
 
     if (id === "announcement-section") {
-      loadCurrentAnnouncement(); // ✅ Call the function here
+      loadCurrentAnnouncement(); // ✅ Load announcement
+    }
+
+    if (id === "users-section") {
+      fetchUsers(); // ✅ Load users when section opens
     }
   }
 }
